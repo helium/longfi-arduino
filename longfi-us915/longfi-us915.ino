@@ -13,22 +13,17 @@
  * the The Things Network. It's pre-configured for the Adafruit
  * Feather M0 LoRa.
  *
- * This uses OTAA (Over-the-air activation), where where a DevEUI and
- * application key is configured, which are used in an over-the-air
- * activation procedure where a DevAddr and session keys are
- * assigned/generated for use with all further communication.
- *
- * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in
- * g1, 0.1% in g2), but not the TTN fair usage policy (which is probably
- * violated by this sketch when left running for longer)!
+ *******************************************************************************/
 
- * To use this sketch, first register your application and device with
- * the things network, to set or generate an AppEUI, DevEUI and AppKey.
- * Multiple devices can use the same AppEUI, but each device has its own
- * DevEUI and AppKey.
+
+/*******************************************************************************
  *
- * Do not forget to define the radio type correctly in
- * arduino-lmic/project_config/lmic_project_config.h or from your BOARDS.txt.
+ * For Helium developers, follow the Arduino Quickstart guide:
+ * https://developer.helium.com/device/arduino-quickstart
+ * TLDR: register your device on the console:
+ * https://console.helium.com/devices
+ *
+ * The App EUI (as lsb) and App Key (as msb) get inserted below.
  *
  *******************************************************************************/
 
@@ -41,34 +36,16 @@
 #include <hal/hal.h>
 #include <SPI.h>
 
-//
-// For normal use, we require that you edit the sketch to replace FILLMEIN
-// with values assigned by the TTN console. However, for regression tests,
-// we want to be able to compile these scripts. The regression tests define
-// COMPILE_REGRESSION_TEST, and in that case we define FILLMEIN to a non-
-// working but innocuous value.
-//
-#ifdef COMPILE_REGRESSION_TEST
-# define FILL_ME_IN 0
-#else
-# warning "You must replace the values marked FILLMEIN with real values from the TTN control panel!"# define FILLMEIN (#dont edit this, edit the lines that use FILLMEIN)
-#endif
-
-// This EUI must be in little-endian (LSB) format, so least-significant-byte
-// first. When copying an EUI from Helium console output, this means
-// you want to display the AppEUI as comma seperated bytes in "lsb" mode
+// This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8]= { FILL_ME_IN };
 void os_getArtEui (u1_t* buf) { memcpy_P(buf, APPEUI, 8);}
 
 // This should also be in little endian format
 // These are user configurable values and Helium console permits anything
-static const u1_t PROGMEM DEVEUI[8]= { FILL_ME_IN };
+static const u1_t PROGMEM DEVEUI[8]= { 0x48, 0x65, 0x6c, 0x69, 0x75, 0x6d, 0x20, 0x20 };
 void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8);}
 
-// This key should be in big endian (MSB) format (or, since it is not really a
-// number but a block of memory, endianness does not really apply). When copying 
-// an AppKey from Helium console output, this means you want to display the AppKey 
-// as comma seperated bytes in "msb" mode
+// This is the "App Key" in Helium. It is big-endian (msb).
 static const u1_t PROGMEM APPKEY[16] = { FILL_ME_IN };
 void os_getDevKey (u1_t* buf) {  memcpy_P(buf, APPKEY, 16);}
 
@@ -186,7 +163,7 @@ void onEvent (ev_t ev) {
             }
             // Disable link check validation (automatically enabled
             // during join, but because slow data rates change max TX
-	    // size, we don't use it in this example.
+        // size, we don't use it in this example.
             LMIC_setLinkCheckMode(0);
             break;
         /*
@@ -288,6 +265,13 @@ void setup() {
     os_init();
     // Reset the MAC state. Session and pending data transfers will be discarded.
     LMIC_reset();
+
+    // allow much more clock error than the X/1000 default. See:
+    // https://github.com/mcci-catena/arduino-lorawan/issues/74#issuecomment-462171974
+    // https://github.com/mcci-catena/arduino-lmic/commit/42da75b56#diff-16d75524a9920f5d043fe731a27cf85aL633
+    // the X/1000 means an error rate of 0.1%; the above issue discusses using values up to 10%.
+    // so, values from 10 (10% error, the most lax) to 1000 (0.1% error, the most strict) can be used.
+    LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
 
     LMIC_setLinkCheckMode(0);
     LMIC_setDrTxpow(DR_SF8, 20); 
