@@ -52,7 +52,8 @@ Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
 
 #### DFU
 Arduino IDE:  
-Select Tools -> Upload Method -> DFU  
+Select Tools -> Upload Method -> DFU
+Select Tools -> Serial Interface -> USB + HW Serial
 
 To put the board in DFU mode, hold down the boot button while pressing and releasing the reset button.
 
