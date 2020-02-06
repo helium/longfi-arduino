@@ -26,7 +26,10 @@ Arduino IDE:
 Install board support package, find instructions [here](https://github.com/mcci-catena/Arduino_Core_STM32#getting-started). 
 
 Arduino IDE:  
-Select Tools -> Board: -> MCCI Catena 4610.  
+Select Tools -> Board: -> MCCI Catena 4610.
+
+For the GPS sketch:
+Select Tools -> Serial Interface -> USB + HW Serial  
 
 [Catena 4610 Product Page](https://store.mcci.com/collections/iot-building-blocks/products/mcci-catena-4610-integrated-node-for-lorawan-technology)  
 [Catena 4610 Pin Mapping Diagram](https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/Catena-4610-Pinmapping.png)
@@ -57,9 +60,6 @@ Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
 #### DFU
 Arduino IDE:  
 Select Tools -> Upload Method -> DFU
-
-For the GPS sketch:
-Select Tools -> Serial Interface -> USB + HW Serial
 
 To put the board in DFU mode, hold down the boot button while pressing and releasing the reset button.
 
