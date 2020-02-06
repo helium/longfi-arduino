@@ -317,7 +317,6 @@ void setup() {
     // so, values from 10 (10% error, the most lax) to 1000 (0.1% error, the most strict) can be used.
     LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
     
-    
     LMIC_setLinkCheckMode(0);
     LMIC_setDrTxpow(DR_SF8, 20); 
     LMIC_selectSubBand(6);
@@ -379,5 +378,4 @@ namespace Arduino_LMIC {
             {
             return myPinmap;
             }
-
 }; // end namespace Arduino_LMIC
