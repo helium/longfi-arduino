@@ -4,7 +4,7 @@
 
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type MCCI and select the MCCI LoRaWAN LMIC library should be the first result.
 
-![](https://cdn-learn.adafruit.com/assets/assets/000/062/526/medium800/feather_Library_Manager_MCCI.png?1537882799)
+![](https://developer.helium.com/static/library_manager-56bed2bb23b6f93e5cc3b25bdfd345a2.png)
 
 ## Board Support
 
