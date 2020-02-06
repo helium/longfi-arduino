@@ -39,8 +39,6 @@
 
 #define GPSSerial Serial1
 
-#define CFG_sx1276_radio 1
-
 // Connect to the GPS on the hardware port
 Adafruit_GPS GPS(&GPSSerial);
 
@@ -254,14 +252,12 @@ void do_send(osjob_t* j){
         if (GPS.fix) {
           Serial.println(GPS.latitudeDegrees);
           Serial.println(GPS.longitudeDegrees);
-          //data = GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7;
-          data = (int)(GPS.latitudeDegrees * 1E7);
+          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          //data = GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7;
-          data = (int)(GPS.longitudeDegrees * 1E7);
+          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7);
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
