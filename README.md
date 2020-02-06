@@ -4,7 +4,11 @@
 
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type MCCI and select the MCCI LoRaWAN LMIC library should be the first result.
 
-![](https://cdn-learn.adafruit.com/assets/assets/000/062/526/medium800/feather_Library_Manager_MCCI.png?1537882799)
+![](https://developer.helium.com/static/library_manager-56bed2bb23b6f93e5cc3b25bdfd345a2.png)
+
+## Adafruit GPS Library [Optional]
+
+From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type Adafruit GPS Library.
 
 ## Board Support
 
@@ -22,7 +26,10 @@ Arduino IDE:
 Install board support package, find instructions [here](https://github.com/mcci-catena/Arduino_Core_STM32#getting-started). 
 
 Arduino IDE:  
-Select Tools -> Board: -> MCCI Catena 4610.  
+Select Tools -> Board: -> MCCI Catena 4610.
+
+For the GPS sketch:
+Select Tools -> Serial Interface -> USB + HW Serial  
 
 [Catena 4610 Product Page](https://store.mcci.com/collections/iot-building-blocks/products/mcci-catena-4610-integrated-node-for-lorawan-technology)  
 [Catena 4610 Pin Mapping Diagram](https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/Catena-4610-Pinmapping.png)
@@ -36,7 +43,7 @@ Select Tools -> Board: -> MCCI Catena 4610.
 [Adafruit Feather M0 with RFM95 Product Page](https://www.adafruit.com/product/3178)  
 [Adafruit Feather M0 with RFM95 Datasheets & Files](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/downloads)
 
-## Programming(Upload Method):
+## Programming (Uploading Method):
 
 ### B-L072Z-LRWAN1 - ST STM32L0 Discovery kit 
 
@@ -53,7 +60,6 @@ Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
 #### DFU
 Arduino IDE:  
 Select Tools -> Upload Method -> DFU
-Select Tools -> Serial Interface -> USB + HW Serial
 
 To put the board in DFU mode, hold down the boot button while pressing and releasing the reset button.
 
