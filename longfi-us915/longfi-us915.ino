@@ -35,6 +35,15 @@
 #include <arduino_lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
+#include <Adafruit_GPS.h>
+
+#define GPSSerial Serial1
+
+#define CFG_sx1276_radio 1
+
+// Connect to the GPS on the hardware port
+Adafruit_GPS GPS(&GPSSerial);
+
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8]= { FILL_ME_IN };
@@ -232,11 +241,46 @@ void do_send(osjob_t* j){
     if (LMIC.opmode & OP_TXRXPEND) {
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0);
+        
+       // Prepare upstream data transmission at the next possible time.
+        static uint8_t payload[32];
+        uint8_t idx = 0;
+        uint32_t data;
+
+        if (GPS.newNMEAreceived()) {
+          GPS.parse(GPS.lastNMEA());
+        }
+        
+        if (GPS.fix) {
+          Serial.println(GPS.latitudeDegrees);
+          Serial.println(GPS.longitudeDegrees);
+          //data = GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7;
+          data = (int)(GPS.latitudeDegrees * 1E7);
+          payload[idx++] = data >> 24;
+          payload[idx++] = data >> 16;
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          //data = GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7;
+          data = (int)(GPS.longitudeDegrees * 1E7);
+          payload[idx++] = data >> 24;
+          payload[idx++] = data >> 16;
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          data = (int)(GPS.altitude + 0.5);
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          payload[idx++] = 0;
+          payload[idx++] = 0;
+        } else {
+          for (idx=0; idx<12; idx++) {
+            payload[idx] = 0;
+          }
+        }
+        //LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0);
         Serial.println(F("Packet queued"));
+        LMIC_setTxData2(1, payload, idx, 0);  
     }
-    // Next TX is scheduled after TX_COMPLETE event.
+   
 }
 
 void setup() {
@@ -272,16 +316,26 @@ void setup() {
     // the X/1000 means an error rate of 0.1%; the above issue discusses using values up to 10%.
     // so, values from 10 (10% error, the most lax) to 1000 (0.1% error, the most strict) can be used.
     LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
-
+    
+    
     LMIC_setLinkCheckMode(0);
     LMIC_setDrTxpow(DR_SF8, 20); 
     LMIC_selectSubBand(6);
+
+    GPS.begin(9600);
+    // Only interrested in GGA, no antenna status
+    GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    GPS.sendCommand(PGCMD_NOANTENNA);
+  
+    // Update every second
+    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
 
     // Start job (sending automatically starts OTAA too)
     do_send(&sendjob);
 }
 
 void loop() {
+    GPS.read();
     os_runloop_once();
 }
 
