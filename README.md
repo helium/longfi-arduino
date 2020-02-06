@@ -6,6 +6,10 @@ From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage 
 
 ![](https://developer.helium.com/static/library_manager-56bed2bb23b6f93e5cc3b25bdfd345a2.png)
 
+## Adafruit GPS Library [Optional]
+
+From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type Adafruit GPS Library.
+
 ## Board Support
 
 ### B-L072Z-LRWAN1 - ST STM32L0 Discovery kit  
@@ -36,7 +40,7 @@ Select Tools -> Board: -> MCCI Catena 4610.
 [Adafruit Feather M0 with RFM95 Product Page](https://www.adafruit.com/product/3178)  
 [Adafruit Feather M0 with RFM95 Datasheets & Files](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/downloads)
 
-## Programming(Upload Method):
+## Programming (Uploading Method):
 
 ### B-L072Z-LRWAN1 - ST STM32L0 Discovery kit 
 
@@ -53,6 +57,8 @@ Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
 #### DFU
 Arduino IDE:  
 Select Tools -> Upload Method -> DFU
+
+For the GPS sketch:
 Select Tools -> Serial Interface -> USB + HW Serial
 
 To put the board in DFU mode, hold down the boot button while pressing and releasing the reset button.
