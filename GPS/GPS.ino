@@ -35,6 +35,13 @@
 #include <arduino_lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
+#include <Adafruit_GPS.h>
+
+#define GPSSerial Serial1
+
+// Connect to the GPS on the hardware port
+Adafruit_GPS GPS(&GPSSerial);
+
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8]= { FILL_ME_IN };
@@ -54,7 +61,7 @@ static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 60;
+const unsigned TX_INTERVAL = 10;
 
 // Pin mapping
 //
@@ -72,37 +79,15 @@ const lmic_pinmap lmic_pins = {
     .rssi_cal = 8,              // LBT cal for the Adafruit Feather M0 LoRa, in dB
     .spi_freq = 8000000,
 };
-#elif defined(ARDUINO_AVR_FEATHER32U4)
-// Pin mapping for Adafruit Feather 32u4 LoRa, etc.
-// Just like Feather M0 LoRa, but uses SPI at 1MHz; and that's only
-// because MCCI doesn't have a test board; probably higher frequencies
-// will work.
-const lmic_pinmap lmic_pins = {
-    .nss = 8,
-    .rxtx = LMIC_UNUSED_PIN,
-    .rst = 4,
-    .dio = {7, 6, LMIC_UNUSED_PIN},
-    .rxtx_rx_active = 0,
-    .rssi_cal = 8,              // LBT cal for the Adafruit Feather 32U4 LoRa, in dB
-    .spi_freq = 1000000,
-};
-#elif defined(ARDUINO_CATENA_4551)
-// Pin mapping for Murata module / Catena 4551
-const lmic_pinmap lmic_pins = {
-        .nss = 7,
-        .rxtx = 29,
-        .rst = 8,
-        .dio = { 25,    // DIO0 (IRQ) is D25
-                 26,    // DIO1 is D26
-                 27,    // DIO2 is D27
-               },
-        .rxtx_rx_active = 1,
-        .rssi_cal = 10,
-        .spi_freq = 8000000     // 8MHz
-};
+
 #elif defined(MCCI_CATENA_4610) 
 #include "arduino_lmic_hal_boards.h"
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Catena4610();
+#elif defined(ARDUINO_DISCO_L072CZ_LRWAN1)
+namespace Arduino_LMIC {
+const HalPinmap_t GetPinmap_Disco_L072cz_Lrwan1();
+}
+const lmic_pinmap lmic_pins = Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #else
 # error "Unknown target"
 #endif
@@ -158,7 +143,7 @@ void onEvent (ev_t ev) {
             }
             // Disable link check validation (automatically enabled
             // during join, but because slow data rates change max TX
-        // size, we don't use it in this example.
+            // size, we don't use it in this example.
             LMIC_setLinkCheckMode(0);
             break;
         /*
@@ -227,11 +212,43 @@ void do_send(osjob_t* j){
     if (LMIC.opmode & OP_TXRXPEND) {
         Serial.println(F("OP_TXRXPEND, not sending"));
     } else {
-        // Prepare upstream data transmission at the next possible time.
-        LMIC_setTxData2(1, mydata, sizeof(mydata)-1, 0);
+        
+       // Prepare upstream data transmission at the next possible time.
+        static uint8_t payload[32];
+        uint8_t idx = 0;
+        uint32_t data;
+
+        if (GPS.newNMEAreceived()) {
+          GPS.parse(GPS.lastNMEA());
+        }
+        
+        if (GPS.fix) {
+          Serial.println(GPS.latitudeDegrees);
+          Serial.println(GPS.longitudeDegrees);
+          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
+          payload[idx++] = data >> 24;
+          payload[idx++] = data >> 16;
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7);
+          payload[idx++] = data >> 24;
+          payload[idx++] = data >> 16;
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          data = (int)(GPS.altitude + 0.5);
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
+          payload[idx++] = 0;
+          payload[idx++] = 0;
+        } else {
+          for (idx=0; idx<12; idx++) {
+            payload[idx] = 0;
+          }
+        }
         Serial.println(F("Packet queued"));
+        LMIC_setTxData2(1, payload, idx, 0);  
     }
-    // Next TX is scheduled after TX_COMPLETE event.
+   
 }
 
 void setup() {
@@ -267,16 +284,25 @@ void setup() {
     // the X/1000 means an error rate of 0.1%; the above issue discusses using values up to 10%.
     // so, values from 10 (10% error, the most lax) to 1000 (0.1% error, the most strict) can be used.
     LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
-
+    
     LMIC_setLinkCheckMode(0);
     LMIC_setDrTxpow(DR_SF8, 20); 
     LMIC_selectSubBand(6);
+
+    GPS.begin(9600);
+    // Only interrested in GGA, no antenna status
+    GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+    GPS.sendCommand(PGCMD_NOANTENNA);
+  
+    // Update every second
+    GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
 
     // Start job (sending automatically starts OTAA too)
     do_send(&sendjob);
 }
 
 void loop() {
+    GPS.read();
     os_runloop_once();
 }
 
@@ -320,5 +346,4 @@ namespace Arduino_LMIC {
             {
             return myPinmap;
             }
-
 }; // end namespace Arduino_LMIC
