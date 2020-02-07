@@ -233,8 +233,9 @@ void do_send(osjob_t* j){
           data = (int)(GPS.altitude + 0.5);
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          payload[idx++] = 0;
-          payload[idx++] = 0;
+          data = (int)(GPS.speed * 1E2);
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
         } else {
           for (idx=0; idx<12; idx++) {
             payload[idx] = 0;
