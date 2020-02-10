@@ -220,20 +220,21 @@ void do_send(osjob_t* j){
         if (GPS.fix) {
           Serial.println(GPS.latitudeDegrees);
           Serial.println(GPS.longitudeDegrees);
-          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
+          Serial.println(GPS.altitude + 0.5);
+          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7); // decimal degree format and getting 7 decimals
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7);
+          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7); // decimal degree format and getting 7 decimals
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.altitude + 0.5);
+          data = (int)(GPS.altitude + 0.5); // round the value
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.speed * 1E2);
+          data = (int)(GPS.speed * 1E2); //getting 2 decimals
           payload[idx++] = data >> 8;
           payload[idx++] = data;
         } else {
