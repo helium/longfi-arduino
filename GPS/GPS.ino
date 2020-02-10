@@ -83,11 +83,6 @@ const lmic_pinmap lmic_pins = {
 #elif defined(MCCI_CATENA_4610) 
 #include "arduino_lmic_hal_boards.h"
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Catena4610();
-#elif defined(ARDUINO_DISCO_L072CZ_LRWAN1)
-namespace Arduino_LMIC {
-const HalPinmap_t GetPinmap_Disco_L072cz_Lrwan1();
-}
-const lmic_pinmap lmic_pins = Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #else
 # error "Unknown target"
 #endif
@@ -225,21 +220,25 @@ void do_send(osjob_t* j){
         if (GPS.fix) {
           Serial.println(GPS.latitudeDegrees);
           Serial.println(GPS.longitudeDegrees);
+          Serial.println(GPS.altitude + 0.5);
+           // decimal degree format and getting 7 decimals
           data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7);
+          // decimal degree format and getting 7 decimals
+          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7); 
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.altitude + 0.5);
+          data = (int)(GPS.altitude + 0.5); // round the value
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          payload[idx++] = 0;
-          payload[idx++] = 0;
+          data = (int)(GPS.speed * 1E2); //getting 2 decimals
+          payload[idx++] = data >> 8;
+          payload[idx++] = data;
         } else {
           for (idx=0; idx<12; idx++) {
             payload[idx] = 0;
@@ -305,45 +304,3 @@ void loop() {
     GPS.read();
     os_runloop_once();
 }
-
-namespace Arduino_LMIC { 
-
-    class HalConfiguration_Disco_L072cz_Lrwan1_t : public HalConfiguration_t
-            {
-    public:
-            enum DIGITAL_PINS : uint8_t
-                    {
-                    PIN_SX1276_NSS = 37,
-                    PIN_SX1276_NRESET = 33,
-                    PIN_SX1276_DIO0 = 38,
-                    PIN_SX1276_DIO1 = 39,
-                    PIN_SX1276_DIO2 = 40,
-                    PIN_SX1276_RXTX = 21,
-                    };
-
-        virtual bool queryUsingTcxo(void) override { return false; };
-            };
-    // save some typing by bringing the pin numbers into scope
-    static HalConfiguration_Disco_L072cz_Lrwan1_t myConfig;
-
-    static const HalPinmap_t myPinmap =
-            {
-            .nss = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NSS,
-            .rxtx = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_RXTX, 
-            .rst = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NRESET,
-
-            .dio = {HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO0, 
-                    HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO1, 
-                    HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO2, 
-                },
-            .rxtx_rx_active = 1,
-            .rssi_cal = 10,
-            .spi_freq = 8000000,     /* 8MHz */
-            .pConfig = &myConfig
-            };
-
-    const HalPinmap_t GetPinmap_Disco_L072cz_Lrwan1(void)
-            {
-            return myPinmap;
-            }
-}; // end namespace Arduino_LMIC
