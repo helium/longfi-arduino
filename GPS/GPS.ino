@@ -221,12 +221,14 @@ void do_send(osjob_t* j){
           Serial.println(GPS.latitudeDegrees);
           Serial.println(GPS.longitudeDegrees);
           Serial.println(GPS.altitude + 0.5);
-          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7); // decimal degree format and getting 7 decimals
+           // decimal degree format and getting 7 decimals
+          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
           payload[idx++] = data;
-          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7); // decimal degree format and getting 7 decimals
+          // decimal degree format and getting 7 decimals
+          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7); 
           payload[idx++] = data >> 24;
           payload[idx++] = data >> 16;
           payload[idx++] = data >> 8;
