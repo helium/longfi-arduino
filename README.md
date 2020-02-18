@@ -34,7 +34,7 @@ Select Tools -> Serial Interface -> USB + HW Serial
 [Catena 4610 Product Page](https://store.mcci.com/collections/iot-building-blocks/products/mcci-catena-4610-integrated-node-for-lorawan-technology)  
 [Catena 4610 Pin Mapping Diagram](https://github.com/mcci-catena/HW-Designs/blob/master/Boards/Catena-4610/Catena-4610-Pinmapping.png)
 
-### Feather M0 RFM96 - Adafruit
+### Feather M0 RFM95 - Adafruit
 
 1. Add Adafruit package index, instructions [here](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/setup).
 2. Install both Arduino and Adafruit SAMD board support, instructions [here](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/using-with-arduino-ide#install-samd-support-6-5).
