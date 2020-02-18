@@ -9,6 +9,10 @@ our way or a bug to report:
   repo](https://github.com/helium/longfi-arduino). Include a
   write up of the PR with details on what it does.
 
+* **Formatting Code**: Please apply clang-format to any PRs. From the
+  root of the repository: 
+	`find . -regex '.*\.\(cpp\|hpp\|cu\|c\|h\|ino\)' -exec clang-format -i {} \;`
+
 * **Reporting Bugs**: Open an issue [against this
   repo](https://github.com/helium/longfi-arduino/issues) with as much
   detail as you can. At the very least you'll include steps to
