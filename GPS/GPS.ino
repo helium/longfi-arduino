@@ -218,27 +218,25 @@ void do_send(osjob_t* j){
         }
         
         if (GPS.fix) {
-          Serial.println(GPS.latitudeDegrees);
-          Serial.println(GPS.longitudeDegrees);
-          Serial.println(GPS.altitude + 0.5);
-           // decimal degree format and getting 7 decimals
-          data = (int)(GPS.latitude_fixed * (GPS.lat == 'N' ? 1 : -1) + 90 * 1E7);
-          payload[idx++] = data >> 24;
-          payload[idx++] = data >> 16;
-          payload[idx++] = data >> 8;
-          payload[idx++] = data;
-          // decimal degree format and getting 7 decimals
-          data = (int)(GPS.longitude_fixed * (GPS.lon == 'E' ? 1 : -1) + 180 * 1E7); 
-          payload[idx++] = data >> 24;
-          payload[idx++] = data >> 16;
-          payload[idx++] = data >> 8;
-          payload[idx++] = data;
-          data = (int)(GPS.altitude + 0.5); // round the value
-          payload[idx++] = data >> 8;
-          payload[idx++] = data;
-          data = (int)(GPS.speed * 1E2); //getting 2 decimals
-          payload[idx++] = data >> 8;
-          payload[idx++] = data;
+            Serial.println(GPS.latitudeDegrees);
+            Serial.println(GPS.longitudeDegrees);
+            Serial.println(GPS.altitude + 0.5);
+            data = (int)(GPS.latitudeDegrees * 1E7);
+            payload[idx++] = data >> 24;
+            payload[idx++] = data >> 16;
+            payload[idx++] = data >> 8;
+            payload[idx++] = data;
+            data = (int)(GPS.longitudeDegrees * 1E7);
+            payload[idx++] = data >> 24;
+            payload[idx++] = data >> 16;
+            payload[idx++] = data >> 8;
+            payload[idx++] = data;
+            data = (int)(GPS.altitude + 0.5);
+            payload[idx++] = data >> 8;
+            payload[idx++] = data;
+            data = (int)(GPS.speed);
+            payload[idx++] = data >> 8;
+            payload[idx++] = data;
         } else {
           for (idx=0; idx<12; idx++) {
             payload[idx] = 0;
