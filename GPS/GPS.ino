@@ -250,8 +250,11 @@ void do_send(osjob_t* j){
 
 void setup() {
     delay(5000);
-    while (! Serial)
-        ;
+
+    // Uncomment to wait for Serial connection (will stall on battery power)
+    // while (! Serial)
+    //     ;
+    
     Serial.begin(9600);
     Serial.println(F("Starting"));
 
