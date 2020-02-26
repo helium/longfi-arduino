@@ -106,10 +106,7 @@ const lmic_pinmap lmic_pins = {
 #include "arduino_lmic_hal_boards.h"
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Catena4610();
 #elif defined(ARDUINO_DISCO_L072CZ_LRWAN1)
-namespace Arduino_LMIC {
-const HalPinmap_t GetPinmap_Disco_L072cz_Lrwan1();
-}
-const lmic_pinmap lmic_pins = Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
+const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #else
 #error "Unknown target"
 #endif
@@ -320,7 +317,5 @@ static const HalPinmap_t myPinmap = {
     .rssi_cal = 10,
     .spi_freq = 8000000, /* 8MHz */
     .pConfig = &myConfig};
-
-const HalPinmap_t GetPinmap_Disco_L072cz_Lrwan1(void) { return myPinmap; }
 
 }; // end namespace Arduino_LMIC
