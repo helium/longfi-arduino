@@ -41,8 +41,7 @@ void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 
 // This should also be in little endian format
 // These are user configurable values and Helium console permits anything
-static const u1_t PROGMEM DEVEUI[8] = {0x48, 0x65, 0x6c, 0x69,
-                                       0x75, 0x6d, 0x20, 0x20};
+static const u1_t PROGMEM DEVEUI[8] = {FILL_ME_IN};
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 
 // This is the "App Key" in Helium. It is big-endian (msb).
