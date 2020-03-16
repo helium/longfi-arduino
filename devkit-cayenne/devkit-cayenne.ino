@@ -1,3 +1,5 @@
+#include <X-NUCLEO-IKS01A3.h>
+
 /*******************************************************************************
  * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
  * Copyright (c) 2018 Terry Moore, MCCI
@@ -34,6 +36,26 @@
 #include <arduino_lmic_user_configuration.h>
 #include <hal/hal.h>
 #include <lmic.h>
+
+#include <LSM6DSOSensor.h>
+#include <LIS2DW12Sensor.h>
+#include <LIS2MDLSensor.h>
+#include <LPS22HHSensor.h>
+#include <STTS751Sensor.h>
+#include <HTS221Sensor.h>
+
+#ifdef ARDUINO_SAM_DUE
+#define DEV_I2C Wire1
+#elif defined(ARDUINO_ARCH_STM32)
+#define DEV_I2C Wire
+#else
+#define DEV_I2C Wire
+#endif
+
+// Sensors
+LSM6DSOSensor *AccGyr;
+LPS22HHSensor *PressTemp;
+HTS221Sensor *HumTemp;
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8] = {FILL_ME_IN};
@@ -226,11 +248,50 @@ void onEvent(ev_t ev) {
   }
 }
 
+void readSensors() {
+  // Read humidity and temperature.
+  float humidity = 0;
+  float temperature = 0;
+  HumTemp->GetHumidity(&humidity);
+  HumTemp->GetTemperature(&temperature);
+
+  // Read pressure and temperature.
+  float pressure = 0;
+  PressTemp->GetPressure(&pressure);
+
+  // Read accelerometer and gyroscope.
+  int32_t accelerometer[3];
+  int32_t gyroscope[3];
+  AccGyr->Get_X_Axes(accelerometer);
+  AccGyr->Get_G_Axes(gyroscope);
+
+  // Output data.
+  Serial.print("| Hum[%]: ");
+  Serial.print(humidity, 2);
+  Serial.print(" | Temp[C]: ");
+  Serial.print(temperature, 2);
+  Serial.print(" | Pres[hPa]: ");
+  Serial.print(pressure, 2);
+  Serial.print(" | Acc[mg]: ");
+  Serial.print(accelerometer[0]);
+  Serial.print(" ");
+  Serial.print(accelerometer[1]);
+  Serial.print(" ");
+  Serial.print(accelerometer[2]);
+  Serial.print(" | Gyr[mdps]: ");
+  Serial.print(gyroscope[0]);
+  Serial.print(" ");
+  Serial.print(gyroscope[1]);
+  Serial.print(" ");
+  Serial.print(gyroscope[2]);
+}
+
 void do_send(osjob_t *j) {
   // Check if there is not a current TX/RX job running
   if (LMIC.opmode & OP_TXRXPEND) {
     Serial.println(F("OP_TXRXPEND, not sending"));
   } else {
+    readSensors();
     // Prepare upstream data transmission at the next possible time.
     LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
     Serial.println(F("Packet queued"));
@@ -239,6 +300,17 @@ void do_send(osjob_t *j) {
 }
 
 void setup() {
+  // Initialize I2C bus.
+  DEV_I2C.begin();
+
+  AccGyr = new LSM6DSOSensor (&DEV_I2C);
+  AccGyr->Enable_X();
+  AccGyr->Enable_G();
+  PressTemp = new LPS22HHSensor(&DEV_I2C);
+  PressTemp->Enable();
+  HumTemp = new HTS221Sensor (&DEV_I2C);
+  HumTemp->Enable();
+
   delay(5000);
   while (!Serial)
     ;
