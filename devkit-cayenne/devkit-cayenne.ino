@@ -1,5 +1,3 @@
-#include <X-NUCLEO-IKS01A3.h>
-
 /*******************************************************************************
  * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
  * Copyright (c) 2018 Terry Moore, MCCI
