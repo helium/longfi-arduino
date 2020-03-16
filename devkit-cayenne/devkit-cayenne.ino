@@ -41,6 +41,7 @@
 #include <LPS22HHSensor.h>
 #include <STTS751Sensor.h>
 #include <HTS221Sensor.h>
+#include <CayenneLPP.h>
 
 #ifdef ARDUINO_SAM_DUE
 #define DEV_I2C Wire1
@@ -68,7 +69,7 @@ void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 static const u1_t PROGMEM APPKEY[16] = {FILL_ME_IN};
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
-static uint8_t mydata[] = "Hello, world!";
+CayenneLPP lpp(51);
 static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
@@ -263,7 +264,17 @@ void readSensors() {
   AccGyr->Get_X_Axes(accelerometer);
   AccGyr->Get_G_Axes(gyroscope);
 
-  // Output data.
+  // Clear Payload
+  lpp.reset();
+  
+  // Pack Packload
+  lpp.addTemperature(1, temperature);
+  lpp.addRelativeHumidity(2, humidity);
+  lpp.addBarometricPressure(3, pressure); 
+  lpp.addAccelerometer(4, accelerometer[0], accelerometer[1], accelerometer[2]);
+  lpp.addGyrometer(5, gyroscope[0], gyroscope[1], gyroscope[2]);
+
+  // Debug Print Data 
   Serial.print("| Hum[%]: ");
   Serial.print(humidity, 2);
   Serial.print(" | Temp[C]: ");
@@ -291,7 +302,7 @@ void do_send(osjob_t *j) {
   } else {
     readSensors();
     // Prepare upstream data transmission at the next possible time.
-    LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
+    LMIC_setTxData2(1, lpp.getBuffer(), lpp.getSize(), 0);
     Serial.println(F("Packet queued"));
   }
   // Next TX is scheduled after TX_COMPLETE event.
