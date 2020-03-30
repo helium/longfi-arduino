@@ -1,6 +1,6 @@
 # Helium Developer Kit - Cayenne Example
 
-This example demonstrates sending motion and environmental sensor data in CayenneLPP format, using a B-L072Z-LRWAN1 development board with a X-NUCLEO-IKS01A3 expansion shield, to the myDevices Cayenne dashboard. For more information on adding your device to the Helium network, visit our quickstart guide [here](https://developer.helium.com/console/quickstart). For more information on adding your device to myDevices Cayenne, visit our guide [here](https://developer.helium.com/console/integrations/mydevices-cayenne-integration).
+This example demonstrates sending motion and environmental sensor data in [CayenneLPP](https://developers.mydevices.com/cayenne/docs/lora/#lora-cayenne-low-power-payload) format, using a B-L072Z-LRWAN1 development board with a X-NUCLEO-IKS01A3 expansion shield, to the myDevices Cayenne dashboard. For more information on adding your device to the Helium network, visit our quickstart guide [here](https://developer.helium.com/console/quickstart). For more information on adding your device to myDevices Cayenne, visit our guide [here](https://developer.helium.com/console/integrations/mydevices-cayenne-integration).
 
 ## Required Arduino Libraries
 
