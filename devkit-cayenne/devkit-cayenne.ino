@@ -71,6 +71,7 @@ void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
 CayenneLPP lpp(51);
 static osjob_t sendjob;
+void do_send(osjob_t *j);
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
