@@ -34,3 +34,24 @@ Download and Install required utility from ST [here](https://www.st.com/en/devel
 
 Arduino IDE:  
 Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
+
+### PlatformIO Configuration 
+
+** If your
+
+```
+[env:disco_l072cz_lrwan1]
+platform = ststm32
+board = disco_l072cz_lrwan1
+framework = arduino
+
+lib_deps =
+     STM32duino LSM6DSO
+     STM32duino LIS2DW12
+     STM32duino STTS751
+     STM32duino LIS2MDL
+     STM32duino LPS22HH
+     STM32duino HTS221
+     MCCI LoRaWAN LMIC library
+     CayenneLPP
+``` 
