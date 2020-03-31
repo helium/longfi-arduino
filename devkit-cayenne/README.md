@@ -35,10 +35,14 @@ Download and Install required utility from ST [here](https://www.st.com/en/devel
 Arduino IDE:  
 Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
 
-### PlatformIO Configuration 
+### PlatformIO Support 
 
-** If your
+The PlatformIO Board file for this board is currently using the incorrect OpenOCD (Upload/Debug)
+script for the microcontroller on this board. We are in the process of pushing a fix upstream. When 
+uploading or debugging, hold the reset button down right until the upload or debug process initiates 
+it's routine in communicating with the board, this seems to aleviate the issue for right now.
 
+`platformio.ini`
 ```
 [env:disco_l072cz_lrwan1]
 platform = ststm32
