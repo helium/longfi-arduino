@@ -14,8 +14,7 @@ From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage 
 Install board support packages, find instructions [here](https://learn.sparkfun.com/tutorials/sparkfun-samd21-pro-rf-hookup-guide?_ga=2.148378999.1172134851.1586114454-289367592.1582349414&_gac=1.242421430.1585837307.EAIaIQobChMI86GEgfjJ6AIVBQF9Ch0mpwyeEAEYASAAEgLFn_D_BwE#setting-up-arduino).  
 
 Arduino IDE:  
-1. Select Tools -> Board: -> Discovery 
-2. Select Tools -> Board part number: -> Discovery L072Z-LRWAN1 
+1. Select Tools -> Board: -> SparkFun SAMD21 Pro RF 
 
 ## Required Hardware
 
