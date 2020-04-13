@@ -8,16 +8,17 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 ### ST B-L072Z-LRWAN1
 * [longfi-us915](ST-B-L072Z-LRWAN1/longfi-us915)
 * [longfi-us915-cayenne-sensor](ST-B-L072Z-LRWAN1/longfi-us915-cayenne-sensor)
-* [longfi-us915-cargo-gps](GPS/longfi-us915-cargo-gps)
+* [longfi-us915-cargo-gps](GPS)
 
 ### Catena 4610
 * [longfi-us915](MCCI-Catena-4610/longfi-us915)
-* [longfi-us915-cargo-gps](GPS/longfi-us915-cargo-gps)
+* [longfi-us915-cargo-gps](GPS)
 
 ### Sparkfun Pro RF
 * [longfi-us915](Sparkfun-Pro-RF/longfi-us915)
 
 ### Adafruit Feather M0 RFM95
 * [longfi-us915](Adafruit-M0-RFM95/longfi-us915)
+* [longfi-us915-cargo-gps](GPS)
 
 
