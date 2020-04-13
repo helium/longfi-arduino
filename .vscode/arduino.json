@@ -1,0 +1,6 @@
+{
+    "board": "STM32:stm32:Disco",
+    "configuration": "pnum=DISCO_L072CZ_LRWAN1,upload_method=swdMethod,xserial=generic,usb=none,xusb=FS,opt=osstd,rtlib=nano",
+    "sketch": "devkit-cayenne\\devkit-cayenne.ino",
+    "port": "COM7"
+}
