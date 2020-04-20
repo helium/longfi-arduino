@@ -21,4 +21,7 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 * [longfi-us915](Adafruit-M0-RFM95/longfi-us915)
 * [longfi-us915-cargo-gps](GPS)
 
+### Heltec WiFi LoRa 32 V2
+* [longfi-us915](Heltec-WiFi-LoRa-32-V2/longfi-us915/longfi-us915)
+
 
