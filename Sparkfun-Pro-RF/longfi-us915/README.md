@@ -9,7 +9,7 @@ From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage 
 [IBM LMIC framework](https://github.com/matthijskooijman/arduino-lmic)  
 
 ### Required Configuration
-This library requires that a config file be setup properly. After you have installed the `IBM LMIC framework` library, navigate to it's directory on your operating system found below. Next, replace the `config.h` file in this directory with this [config.h](config.h) file.
+This library requires that a config file be setup properly. After you have installed the `IBM LMIC framework` library, navigate to it's directory on your operating system found below. Next, replace the `config.h` file in this directory with this [config.h](https://github.com/helium/longfi-arduino/blob/master/Sparkfun-Pro-RF/longfi-us915/config.h) file.
 
 linux: /home/{user}/Arduino/libraries/IBM_LMIC_framework/src/lmic  
 windows: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
