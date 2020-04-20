@@ -26,7 +26,6 @@
  *
  *******************************************************************************/
 
-#include <Adafruit_GPS.h>
 #include <SPI.h>
 #include <arduino_lmic.h>
 #include <arduino_lmic_hal_boards.h>
@@ -36,19 +35,13 @@
 #include <hal/hal.h>
 #include <lmic.h>
 
-#define GPSSerial Serial1
-
-// Connect to the GPS on the hardware port
-Adafruit_GPS GPS(&GPSSerial);
-
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8] = {FILL_ME_IN};
 void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 
 // This should also be in little endian format
 // These are user configurable values and Helium console permits anything
-static const u1_t PROGMEM DEVEUI[8] = {0x48, 0x65, 0x6c, 0x69,
-                                       0x75, 0x6d, 0x20, 0x20};
+static const u1_t PROGMEM DEVEUI[8] = {FILL_ME_IN};
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 
 // This is the "App Key" in Helium. It is big-endian (msb).
@@ -60,7 +53,7 @@ static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 10;
+const unsigned TX_INTERVAL = 60;
 
 // Pin mapping
 //
@@ -78,10 +71,41 @@ const lmic_pinmap lmic_pins = {
     .rssi_cal = 8, // LBT cal for the Adafruit Feather M0 LoRa, in dB
     .spi_freq = 8000000,
 };
-
+#elif defined(ARDUINO_AVR_FEATHER32U4)
+// Pin mapping for Adafruit Feather 32u4 LoRa, etc.
+// Just like Feather M0 LoRa, but uses SPI at 1MHz; and that's only
+// because MCCI doesn't have a test board; probably higher frequencies
+// will work.
+const lmic_pinmap lmic_pins = {
+    .nss = 8,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst = 4,
+    .dio = {7, 6, LMIC_UNUSED_PIN},
+    .rxtx_rx_active = 0,
+    .rssi_cal = 8, // LBT cal for the Adafruit Feather 32U4 LoRa, in dB
+    .spi_freq = 1000000,
+};
+#elif defined(ARDUINO_CATENA_4551)
+// Pin mapping for Murata module / Catena 4551
+const lmic_pinmap lmic_pins = {
+    .nss = 7,
+    .rxtx = 29,
+    .rst = 8,
+    .dio =
+        {
+            25, // DIO0 (IRQ) is D25
+            26, // DIO1 is D26
+            27, // DIO2 is D27
+        },
+    .rxtx_rx_active = 1,
+    .rssi_cal = 10,
+    .spi_freq = 8000000 // 8MHz
+};
 #elif defined(MCCI_CATENA_4610)
 #include "arduino_lmic_hal_boards.h"
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Catena4610();
+#elif defined(ARDUINO_DISCO_L072CZ_LRWAN1)
+const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #else
 #error "Unknown target"
 #endif
@@ -207,44 +231,11 @@ void do_send(osjob_t *j) {
   if (LMIC.opmode & OP_TXRXPEND) {
     Serial.println(F("OP_TXRXPEND, not sending"));
   } else {
-
     // Prepare upstream data transmission at the next possible time.
-    static uint8_t payload[32];
-    uint8_t idx = 0;
-    uint32_t data;
-
-    if (GPS.newNMEAreceived()) {
-      GPS.parse(GPS.lastNMEA());
-    }
-
-    if (GPS.fix) {
-      Serial.println(GPS.latitudeDegrees);
-      Serial.println(GPS.longitudeDegrees);
-      Serial.println(GPS.altitude + 0.5);
-      data = (int)(GPS.latitudeDegrees * 1E7);
-      payload[idx++] = data >> 24;
-      payload[idx++] = data >> 16;
-      payload[idx++] = data >> 8;
-      payload[idx++] = data;
-      data = (int)(GPS.longitudeDegrees * 1E7);
-      payload[idx++] = data >> 24;
-      payload[idx++] = data >> 16;
-      payload[idx++] = data >> 8;
-      payload[idx++] = data;
-      data = (int)(GPS.altitude + 0.5);
-      payload[idx++] = data >> 8;
-      payload[idx++] = data;
-      data = (int)(GPS.speed);
-      payload[idx++] = data >> 8;
-      payload[idx++] = data;
-    } else {
-      for (idx = 0; idx < 12; idx++) {
-        payload[idx] = 0;
-      }
-    }
+    LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
     Serial.println(F("Packet queued"));
-    LMIC_setTxData2(1, payload, idx, 0);
   }
+  // Next TX is scheduled after TX_COMPLETE event.
 }
 
 void setup() {
@@ -286,19 +277,44 @@ void setup() {
   LMIC_setDrTxpow(DR_SF8, 20);
   LMIC_selectSubBand(6);
 
-  GPS.begin(9600);
-  // Only interrested in GGA, no antenna status
-  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-  GPS.sendCommand(PGCMD_NOANTENNA);
-
-  // Update every second
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ); // 1 Hz update rate
-
   // Start job (sending automatically starts OTAA too)
   do_send(&sendjob);
 }
 
-void loop() {
-  GPS.read();
-  os_runloop_once();
-}
+void loop() { os_runloop_once(); }
+
+namespace Arduino_LMIC {
+
+class HalConfiguration_Disco_L072cz_Lrwan1_t : public HalConfiguration_t {
+public:
+  enum DIGITAL_PINS : uint8_t {
+    PIN_SX1276_NSS = 37,
+    PIN_SX1276_NRESET = 33,
+    PIN_SX1276_DIO0 = 38,
+    PIN_SX1276_DIO1 = 39,
+    PIN_SX1276_DIO2 = 40,
+    PIN_SX1276_RXTX = 21,
+  };
+
+  virtual bool queryUsingTcxo(void) override { return false; };
+};
+// save some typing by bringing the pin numbers into scope
+static HalConfiguration_Disco_L072cz_Lrwan1_t myConfig;
+
+static const HalPinmap_t myPinmap = {
+    .nss = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NSS,
+    .rxtx = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_RXTX,
+    .rst = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NRESET,
+
+    .dio =
+        {
+            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO0,
+            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO1,
+            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO2,
+        },
+    .rxtx_rx_active = 1,
+    .rssi_cal = 10,
+    .spi_freq = 8000000, /* 8MHz */
+    .pConfig = &myConfig};
+
+}; // end namespace Arduino_LMIC
