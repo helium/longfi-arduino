@@ -1,14 +1,32 @@
-# ST B-L072Z-LRWAN1 - Cayenne Example
+# ST B-L072Z-LRWAN1 - Button to AWS Example
 
-This example demonstrates sending motion and environmental sensor data in [CayenneLPP](https://developers.mydevices.com/cayenne/docs/lora/#lora-cayenne-low-power-payload) format, using a B-L072Z-LRWAN1 development board with a X-NUCLEO-IKS01A3 expansion shield, to the myDevices Cayenne dashboard. For more information on adding your device to the Helium network, visit our quickstart guide [here](https://developer.helium.com/console/quickstart). For more information on adding your device to myDevices Cayenne, visit our guide [here](https://developer.helium.com/console/integrations/mydevices-cayenne-integration).
+This is an example code for building an AWS IoT application that sends you text messages using Twilio.
 
+You'll need:
+* ST-B-L072Z-LRWAN1
+* An AWS account
+* A Twilio account
+
+You need to load this sketch onto the ST-B-L072Z-LRWAN1. The sketch will send a heartbeat every 15 seconds and will asyncronously send an alert whenever the button is pressed.
+
+Once you confirm that the device is connecting and sending data via Helium Console, you'll want to setup an integration to AWS IoT.
+
+Once you do that, you want to create a Lambda function using the Python file here: lambda_button_text.py
+
+You'll need to set environmental variables to make it work:
+* TWILIO_AUTH_TOKEN: get this from your Twilio dashboard
+* TWILIO_ACCOUNT_SID: get this from your Twilio dashboard	
+* TWILIO_ASSIGNED_NUMBER: get this from your Twilio dashboard	
+* USER_NUMBER‬: this is the cell phone number which will get text message alerts when the button is pressed
+
+Once you save the lambda function, you will simply need to connect the lambda function to an AWS IoT trigger. Use the rule query statement: SELECT * FROM "helium"
+
+Once that is don
 ## Required Arduino Libraries
 
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
 
 [MCCI Arduino LoRaWAN Library](https://github.com/mcci-catena/arduino-lmic)  
-[CayenneLPP](https://github.com/ElectronicCats/CayenneLPP)  
-[X-NUCLEO-IKS01A3](https://github.com/stm32duino/X-NUCLEO-IKS01A3)  
 
 ## Required Arduino Board Support
 
@@ -26,10 +44,6 @@ Arduino IDE:
 [B-L072Z-LRWAN1 Product Page](https://www.st.com/en/evaluation-tools/b-l072z-lrwan1.html)  
 [B-L072Z-LRWAN1 User Manual](https://www.st.com/content/ccc/resource/technical/document/user_manual/group0/ac/62/15/c7/60/ac/4e/9c/DM00329995/files/DM00329995.pdf/jcr:content/translations/en.DM00329995.pdf)  
 
-### X-NUCLEO-IKS01A3 - ST Motion MEMS and Environmental Sensor Board
-
-[X-NUCLEO-IKS01A3 Product Page](https://www.st.com/en/ecosystems/x-nucleo-iks01a3.html)  
-[X-NUCLEO-IKS01A3 User Manual](https://www.st.com/resource/en/user_manual/dm00601501-getting-started-with-the-xnucleoiks01a3-motion-mems-and-environmental-sensor-expansion-board-for-stm32-nucleo-stmicroelectronics.pdf)  
 ## Programming (Uploading Method):
 
 #### STM32CubeProgrammer(SWD)
@@ -54,12 +68,6 @@ board = disco_l072cz_lrwan1
 framework = arduino
 
 lib_deps =
-     STM32duino LSM6DSO
-     STM32duino LIS2DW12
-     STM32duino STTS751
-     STM32duino LIS2MDL
-     STM32duino LPS22HH
-     STM32duino HTS221
      MCCI LoRaWAN LMIC library
      CayenneLPP
 ``` 
