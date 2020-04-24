@@ -5,6 +5,14 @@
 
 ## Required Arduino Libraries
 
+### Important
+Make sure you do not have other LMIC arduino libraries installed, otherwise you will experience 
+build errors. You can find your Arduino libraries for your operating system below, simply delete the directory if you would like to remove a library.
+
+linux: /home/{user}/Arduino/libraries
+windows: Documents/Arduino/libraries
+mac os: Documents/Arduino/libraries 
+
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
 
 [IBM LMIC framework](https://github.com/matthijskooijman/arduino-lmic)  
