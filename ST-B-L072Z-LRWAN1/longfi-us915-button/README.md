@@ -21,7 +21,8 @@ You'll need to set environmental variables to make it work:
 
 Once you save the lambda function, you will simply need to connect the lambda function to an AWS IoT trigger. Use the rule query statement: SELECT * FROM "helium"
 
-Once that is don
+Now you're done! Press the button and you should get a text message.
+
 ## Required Arduino Libraries
 
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
