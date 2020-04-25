@@ -7,6 +7,7 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 ## Examples
 ### ST B-L072Z-LRWAN1
 * [longfi-us915](ST-B-L072Z-LRWAN1/longfi-us915)
+* [longfi-us915](ST-B-L072Z-LRWAN1/longfi-us915-button)
 * [longfi-us915-cayenne-sensor](ST-B-L072Z-LRWAN1/longfi-us915-cayenne-sensor)
 * [longfi-us915-cargo-gps](GPS)
 
