@@ -4,7 +4,7 @@ This example demonstrates sending a simple data packet using a Sparkfun Pro RF d
 
 ## Required Arduino Libraries
 
-From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
+From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install version `1.5.0+arduino-2`.
 
 [IBM LMIC framework](https://github.com/matthijskooijman/arduino-lmic)  
 
