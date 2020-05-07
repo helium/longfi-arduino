@@ -23,7 +23,7 @@ Arduino IDE:
 Arduino IDE:  
 1. Select File -> Examples -> LoRa -> LoRaWAN
 2. Select Tools -> Port: "COM# or ttyACM#" 
-3. Enter DevEUI(msb), AppEUI(msb), and AppKey(msb) from Helium Console, at lines 34,35,36.
+3. Enter DevEUI(msb), AppEUI(msb), and AppKey(msb) from Helium Console, at lines 14, 15, 16. 
 ```
 uint8_t DevEui[] = { FILL_ME_IN };
 uint8_t AppEui[] = { FILL_ME_IN };
