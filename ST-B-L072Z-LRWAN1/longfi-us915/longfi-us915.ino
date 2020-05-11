@@ -32,8 +32,8 @@ const char *devEui = "00D644FC35CFC35E";
 const char *appEui = "5C23E22B09F08C65";
 const char *appKey = "BFE99D0DFCE6258295413283A87F8403";
 
-// Max Payload 11 Bytes for DR 0
-const uint8_t payload[] = "Hello!";
+// Max Payload 53 Bytes for DR 1
+const uint8_t payload[] = "Hello, World!";
 
 void setup( void )
 {
@@ -45,8 +45,8 @@ void setup( void )
     LoRaWAN.begin(US915);
     // Helium SubBand
     LoRaWAN.setSubBand(7);
-    // Set Data Rate 0 - Max Payload 11 Bytes
-    LoRaWAN.setDataRate(0);
+    // Set Data Rate 1 - Max Payload 53 Bytes
+    LoRaWAN.setDataRate(1);
     // Device IDs and Key
     LoRaWAN.joinOTAA(appEui, appKey, devEui);
 
