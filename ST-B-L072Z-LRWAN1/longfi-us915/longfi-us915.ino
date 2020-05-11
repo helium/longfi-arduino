@@ -28,9 +28,9 @@
 
 #include "LoRaWAN.h"
 
-const char *devEui = "00D644FC35CFC35E";
-const char *appEui = "5C23E22B09F08C65";
-const char *appKey = "BFE99D0DFCE6258295413283A87F8403";
+const char *devEui = "FILL_ME_IN";
+const char *appEui = "FILL_ME_IN";
+const char *appKey = "FILL_ME_IN";
 
 // Max Payload 53 Bytes for DR 1
 const uint8_t payload[] = "Hello, World!";
