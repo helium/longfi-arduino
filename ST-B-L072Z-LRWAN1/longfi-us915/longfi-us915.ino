@@ -45,6 +45,8 @@ void setup( void )
     LoRaWAN.begin(US915);
     // Helium SubBand
     LoRaWAN.setSubBand(7);
+    // Disable Adaptive Data Rate
+    LoRaWAN.setADR(false);
     // Set Data Rate 1 - Max Payload 53 Bytes
     LoRaWAN.setDataRate(1);
     // Device IDs and Key
