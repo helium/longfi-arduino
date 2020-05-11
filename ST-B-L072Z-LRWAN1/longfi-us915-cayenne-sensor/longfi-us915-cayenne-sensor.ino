@@ -1,30 +1,3 @@
-/* Simple OTAA join for a LoRaWAN network
- *  
- *  In setup() below please replace the argument to LoRaWAN.begin()
- *  with your appropriate region specific band:
- *
- *  AS923
- *  AU915
- *  EU868
- *  IN865
- *  KR920
- *  US915
- *
- *  AU915/US915 networks have 64+8 channels. Typical gateways support only
- *  8 (9) channels. Hence it's a good idea to pick the proper channel
- *  subset via select via LoRaWAN.setSubBand(),
- *    
- *  EU868/IN865 have duty cycle restrictions. For debugging it makes sense
- *  to disable those via setDutyCycle(false);
- *    
- *  For an external antenna one should set the proper antenna gain
- *  (default is 2.0) via setAntennaGain().
- *    
- *  Please edit the keys below as they are just debugging samples.
- *    
- *    
- * This example code is in the public domain.
- */
 #include "LoRaWAN.h"
 #include <CayenneLPP.h>
 
