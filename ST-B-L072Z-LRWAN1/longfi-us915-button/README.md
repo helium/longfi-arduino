@@ -23,21 +23,6 @@ Once you save the lambda function, you will simply need to connect the lambda fu
 
 Now you're done! Press the button and you should get a text message.
 
-## Required Arduino Libraries
-
-From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
-
-[MCCI Arduino LoRaWAN Library](https://github.com/mcci-catena/arduino-lmic)  
-
-## Required Arduino Board Support
-
-### B-L072Z-LRWAN1 - ST STM32L0 Discovery kit  
-Install board support package, find instructions [here](https://github.com/stm32duino/Arduino_Core_STM32#getting-started).  
-
-Arduino IDE:  
-1. Select Tools -> Board: -> Discovery 
-2. Select Tools -> Board part number: -> Discovery L072Z-LRWAN1 
-
 ## Required Hardware
 
 ### B-L072Z-LRWAN1 - ST STM32L0 Discovery kit
@@ -45,30 +30,27 @@ Arduino IDE:
 [B-L072Z-LRWAN1 Product Page](https://www.st.com/en/evaluation-tools/b-l072z-lrwan1.html)  
 [B-L072Z-LRWAN1 User Manual](https://www.st.com/content/ccc/resource/technical/document/user_manual/group0/ac/62/15/c7/60/ac/4e/9c/DM00329995/files/DM00329995.pdf/jcr:content/translations/en.DM00329995.pdf)  
 
-## Programming (Uploading Method):
+## Required Board Support & Library
 
-#### STM32CubeProgrammer(SWD)
-Will use onboard ST-Link(Flasher/Debugger) to upload sketch.  
-Download and Install required utility from ST [here](https://www.st.com/en/development-tools/stm32cubeprog.html).  
-
+### Arduino Core for STM32L0 
 Arduino IDE:  
-Select Tools -> Upload Method -> STM32CubeProgrammer(SWD)
-
-### PlatformIO Support 
-
-The PlatformIO Board file for this board is currently using the incorrect OpenOCD (Upload/Debug)
-script for the microcontroller on this board. We are in the process of pushing a fix upstream. When 
-uploading or debugging, hold the reset button down right until the upload or debug process initiates 
-it's routine in communicating with the board, this seems to aleviate the issue for right now.
-
-`platformio.ini`
+1. Navigate to (File > Preferences)
+Find the section at the bottom called Additional Boards Manager URLs: 
+2. Add the URL below to the list and click ok to close the preferences.
 ```
-[env:disco_l072cz_lrwan1]
-platform = ststm32
-board = disco_l072cz_lrwan1
-framework = arduino
+https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_index.json
+```
+![arduino_preferences](https://i.gyazo.com/558b58a463578b28e17ffb763a592c69.png)
 
-lib_deps =
-     MCCI LoRaWAN LMIC library
-     CayenneLPP
-``` 
+3. Open Boards Manager: Select Tools > Board: > Boards Manager...
+4. Search for "Tlera Corp STM32L0 Boards"
+5. Select the newest version and install.
+
+![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
+## Programming (Uploading):
+
+Arduino IDE:   
+1. Select Board: Tools > Board: > B-L072Z-LRWAN1  
+2. Select Port: Tools > Port > COM# or /dev/ttyACM#(B-L072Z-LRWAN1)
+3. Upload Sketch: Select > Upload
+4. (Optional) View Serial Debug Output: Tools > Serial Monitor > 9600 baud
