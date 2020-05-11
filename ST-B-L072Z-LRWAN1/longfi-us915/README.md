@@ -20,9 +20,10 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 5. Select the newest version and install.
 
 ![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
-## Programming (Uploading Method):
+## Programming (Uploading):
 
 Arduino IDE:   
 1. Select Board: Tools > Board: > B-L072Z-LRWAN1  
 2. Select Port: Tools > Port > COM# or /dev/ttyACM#(B-L072Z-LRWAN1)
 3. Upload Sketch: Select > Upload
+4. (Optional) View Serial Debug Output: Tools > Serial Monitor > 9600 baud
