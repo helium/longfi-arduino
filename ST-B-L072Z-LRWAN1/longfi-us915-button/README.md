@@ -30,6 +30,9 @@ Now you're done! Press the button and you should get a text message.
 [B-L072Z-LRWAN1 Product Page](https://www.st.com/en/evaluation-tools/b-l072z-lrwan1.html)  
 [B-L072Z-LRWAN1 User Manual](https://www.st.com/content/ccc/resource/technical/document/user_manual/group0/ac/62/15/c7/60/ac/4e/9c/DM00329995/files/DM00329995.pdf/jcr:content/translations/en.DM00329995.pdf)  
 
+## Required Driver (Windows Only)
+Download driver [here](https://www.st.com/en/development-tools/stsw-link009.html).
+
 ## Required Board Support & Library
 
 ### Arduino Core for STM32L0 

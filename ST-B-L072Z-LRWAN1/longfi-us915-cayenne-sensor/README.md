@@ -14,6 +14,9 @@ This example demonstrates sending motion and environmental sensor data in [Cayen
 [X-NUCLEO-IKS01A3 Product Page](https://www.st.com/en/ecosystems/x-nucleo-iks01a3.html)  
 [X-NUCLEO-IKS01A3 User Manual](https://www.st.com/resource/en/user_manual/dm00601501-getting-started-with-the-xnucleoiks01a3-motion-mems-and-environmental-sensor-expansion-board-for-stm32-nucleo-stmicroelectronics.pdf)  
 
+## Required Driver (Windows Only)
+Download driver [here](https://www.st.com/en/development-tools/stsw-link009.html).
+
 ## Required Arduino Libraries
 
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type the library name below and install the latest version.
@@ -35,6 +38,19 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 3. Open Boards Manager: Select Tools > Board: > Boards Manager...
 4. Search for "Tlera Corp STM32L0 Boards"
 5. Select the newest version and install.
+
+### Required Temporary Manual Fix
+Until this fix has been released you will need to insert three lines of code in a library file.
+Insert the following:
+```
+#ifndef NULL
+#define NULL  0
+#endif
+```
+Into the file found here:
+linux: /home/{user}/Arduino/libraries/IBM_LMIC_framework/src/lmic  
+windows: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
+mac os: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
 
 ![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
 ## Programming (Uploading):
