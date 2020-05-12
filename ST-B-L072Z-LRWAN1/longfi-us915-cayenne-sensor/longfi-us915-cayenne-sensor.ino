@@ -357,7 +357,8 @@ void setup() {
 
   LMIC_setLinkCheckMode(0);
   LMIC_setDrTxpow(DR_SF8, 20);
-  LMIC_selectSubBand(6);
+  // Sub-band 2 - Helium Network
+  LMIC_selectSubBand(1); // zero indexed 
 
   // Start job (sending automatically starts OTAA too)
   do_send(&sendjob);

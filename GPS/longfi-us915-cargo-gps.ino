@@ -283,7 +283,8 @@ void setup() {
 
   LMIC_setLinkCheckMode(0);
   LMIC_setDrTxpow(DR_SF8, 20);
-  LMIC_selectSubBand(6);
+  // Sub-band 2 - Helium Network
+  LMIC_selectSubBand(1); // zero indexed 
 
   GPS.begin(9600);
   // Only interrested in GGA, no antenna status

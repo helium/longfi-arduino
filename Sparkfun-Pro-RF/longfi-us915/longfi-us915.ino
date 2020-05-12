@@ -135,7 +135,8 @@ void setup() {
     // (0.1% error, the most strict) can be used.
     LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
 
-    LMIC_selectSubBand(6);
+    // Sub-band 2 - Helium Network
+    LMIC_selectSubBand(1); // zero indexed 
     LMIC_setLinkCheckMode(0);
     LMIC_setDrTxpow(DR_SF7, 14);
 
