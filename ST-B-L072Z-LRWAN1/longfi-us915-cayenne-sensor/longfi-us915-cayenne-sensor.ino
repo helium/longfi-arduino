@@ -89,7 +89,7 @@ void setup( void )
   // US Region
   LoRaWAN.begin(US915);
   // Helium SubBand
-  LoRaWAN.setSubBand(7);
+  LoRaWAN.setSubBand(2);
   // Disable Adaptive Data Rate
   LoRaWAN.setADR(false);
   // Set Data Rate 1 - Max Payload 53 Bytes

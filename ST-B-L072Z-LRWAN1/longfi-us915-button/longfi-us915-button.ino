@@ -53,7 +53,7 @@ void setup(void) {
   // US Region
   LoRaWAN.begin(US915);
   // Helium SubBand
-  LoRaWAN.setSubBand(7);
+  LoRaWAN.setSubBand(2);
   // Disable Adaptive Data Rate
   LoRaWAN.setADR(false);
   // Device IDs and Key
