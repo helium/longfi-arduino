@@ -26,10 +26,10 @@ Arduino IDE:
 [B-L072Z-LRWAN1 Product Page](https://www.st.com/en/evaluation-tools/b-l072z-lrwan1.html)  
 [B-L072Z-LRWAN1 User Manual](https://www.st.com/content/ccc/resource/technical/document/user_manual/group0/ac/62/15/c7/60/ac/4e/9c/DM00329995/files/DM00329995.pdf/jcr:content/translations/en.DM00329995.pdf)  
 
-### X-NUCLEO-IKS01A3 - ST Motion MEMS and Environmental Sensor Board
+### X-NUCLEO-GNSS1A1 - ST GNSS expansion board based on Teseo-LIV3F module
 
-[X-NUCLEO-IKS01A3 Product Page](https://www.st.com/en/ecosystems/x-nucleo-iks01a3.html)  
-[X-NUCLEO-IKS01A3 User Manual](https://www.st.com/resource/en/user_manual/dm00601501-getting-started-with-the-xnucleoiks01a3-motion-mems-and-environmental-sensor-expansion-board-for-stm32-nucleo-stmicroelectronics.pdf)  
+[X-NUCLEO-GNSS1A1 Product Page](https://www.st.com/en/ecosystems/x-nucleo-gnss1a1.html)  
+[X-NUCLEO-GNSS1A1 User Manual](https://www.st.com/resource/en/user_manual/dm00453103-getting-started-with-the-xnucleognss1a1-expansion-board-based-on-teseoliv3f-tiny-gnss-module-for-stm32-nucleo-stmicroelectronics.pdf)  
 ## Programming (Uploading Method):
 
 #### STM32CubeProgrammer(SWD)
