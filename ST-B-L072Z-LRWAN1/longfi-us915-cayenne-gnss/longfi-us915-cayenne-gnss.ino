@@ -301,6 +301,9 @@ void readGPS() {
       ledState = !ledState;
       digitalWrite(LED_BUILTIN, ledState);
 
+      // Clear Payload
+      lpp.reset();
+
       // Output GPS information from previous second
       Serial.print("Valid fix: ");
       Serial.println(nmea.isValid() ? "yes" : "no");
@@ -345,12 +348,15 @@ void readGPS() {
       else
          Serial.println("not available");
 
+      lpp.addGPS(1, latitude_mdeg, longitude_mdeg, alt);
+
       Serial.print("Speed: ");
       Serial.println(nmea.getSpeed() / 1000., 3);
       Serial.print("Course: ");
       Serial.println(nmea.getCourse() / 1000., 3);
       Serial.println("-----------------------");
       nmea.clear();
+      
    }
    else
    {
