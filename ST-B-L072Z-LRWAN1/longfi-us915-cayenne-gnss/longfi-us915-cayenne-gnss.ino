@@ -35,12 +35,11 @@
 #include <hal/hal.h>
 #include <lmic.h>
 
-
+#include <CayenneLPP.h>
 #include <MicroNMEA.h>
 #include <Wire.h>
-#include <CayenneLPP.h>
 
-//I2C communication parameters
+// I2C communication parameters
 #define DEFAULT_DEVICE_ADDRESS 0x3A
 #define DEFAULT_DEVICE_PORT 0xFF
 #define I2C_DELAY 1
@@ -63,8 +62,8 @@ static const u1_t PROGMEM APPKEY[16] = {0};
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
 CayenneLPP lpp(51);
-TwoWire& gps = DEV_I2C;
-//I2C read data structures
+TwoWire &gps = DEV_I2C;
+// I2C read data structures
 char buff[32];
 int idx = 0;
 
@@ -137,44 +136,37 @@ const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #error "Unknown target"
 #endif
 
-void ppsHandler(void)
-{
-  ppsTriggered = true;
+void ppsHandler(void) { ppsTriggered = true; }
+
+void gpsHardwareReset() {
+  // reset the device
+  digitalWrite(RESET_PIN, LOW);
+  delay(50);
+  digitalWrite(RESET_PIN, HIGH);
+
+  // wait for reset to apply
+  delay(2000);
 }
 
-void gpsHardwareReset()
-{
-   //reset the device
-   digitalWrite(RESET_PIN, LOW);
-   delay(50);
-   digitalWrite(RESET_PIN, HIGH);
-
-   //wait for reset to apply
-   delay(2000);
+// Read 32 bytes from I2C
+void readI2C(char *inBuff) {
+  gps.beginTransmission(DEFAULT_DEVICE_ADDRESS);
+  gps.write((uint8_t)DEFAULT_DEVICE_PORT);
+  gps.endTransmission(false);
+  gps.requestFrom((uint8_t)DEFAULT_DEVICE_ADDRESS, (uint8_t)32);
+  int i = 0;
+  while (gps.available()) {
+    inBuff[i] = gps.read();
+    i++;
+  }
 }
 
-//Read 32 bytes from I2C
-void readI2C(char *inBuff)
-{
-   gps.beginTransmission(DEFAULT_DEVICE_ADDRESS);
-   gps.write((uint8_t) DEFAULT_DEVICE_PORT);
-   gps.endTransmission(false);
-   gps.requestFrom((uint8_t)DEFAULT_DEVICE_ADDRESS, (uint8_t) 32);
-   int i = 0;
-   while (gps.available())
-   {
-      inBuff[i]= gps.read();
-      i++;
-   }
-}
-
-//Send a NMEA command via I2C
-void sendCommand(char *cmd)
-{
-   gps.beginTransmission(DEFAULT_DEVICE_ADDRESS);
-   gps.write((uint8_t) DEFAULT_DEVICE_PORT);
-   MicroNMEA::sendSentence(gps, cmd);
-   gps.endTransmission(true);
+// Send a NMEA command via I2C
+void sendCommand(char *cmd) {
+  gps.beginTransmission(DEFAULT_DEVICE_ADDRESS);
+  gps.write((uint8_t)DEFAULT_DEVICE_PORT);
+  MicroNMEA::sendSentence(gps, cmd);
+  gps.endTransmission(true);
 }
 
 void onEvent(ev_t ev) {
@@ -294,89 +286,86 @@ void onEvent(ev_t ev) {
 }
 
 void readGPS() {
-   //If a message is recieved print all the informations
-   if (ppsTriggered)
-   {
-      ppsTriggered = false;
-      ledState = !ledState;
-      digitalWrite(LED_BUILTIN, ledState);
+  // If a message is recieved print all the informations
+  if (ppsTriggered) {
+    ppsTriggered = false;
+    ledState = !ledState;
+    digitalWrite(LED_BUILTIN, ledState);
 
-      // Clear Payload
-      lpp.reset();
+    // Clear Payload
+    lpp.reset();
 
-      // Output GPS information from previous second
-      Serial.print("Valid fix: ");
-      Serial.println(nmea.isValid() ? "yes" : "no");
+    // Output GPS information from previous second
+    Serial.print("Valid fix: ");
+    Serial.println(nmea.isValid() ? "yes" : "no");
 
-      Serial.print("Nav. system: ");
-      if (nmea.getNavSystem())
-         Serial.println(nmea.getNavSystem());
-      else
-         Serial.println("none");
+    Serial.print("Nav. system: ");
+    if (nmea.getNavSystem())
+      Serial.println(nmea.getNavSystem());
+    else
+      Serial.println("none");
 
-      Serial.print("Num. satellites: ");
-      Serial.println(nmea.getNumSatellites());
+    Serial.print("Num. satellites: ");
+    Serial.println(nmea.getNumSatellites());
 
-      Serial.print("HDOP: ");
-      Serial.println(nmea.getHDOP()/10., 1);
+    Serial.print("HDOP: ");
+    Serial.println(nmea.getHDOP() / 10., 1);
 
-      Serial.print("Date/time: ");
-      Serial.print(nmea.getYear());
-      Serial.print('-');
-      Serial.print(int(nmea.getMonth()));
-      Serial.print('-');
-      Serial.print(int(nmea.getDay()));
-      Serial.print('T');
-      Serial.print(int(nmea.getHour()));
-      Serial.print(':');
-      Serial.print(int(nmea.getMinute()));
-      Serial.print(':');
-      Serial.println(int(nmea.getSecond()));
+    Serial.print("Date/time: ");
+    Serial.print(nmea.getYear());
+    Serial.print('-');
+    Serial.print(int(nmea.getMonth()));
+    Serial.print('-');
+    Serial.print(int(nmea.getDay()));
+    Serial.print('T');
+    Serial.print(int(nmea.getHour()));
+    Serial.print(':');
+    Serial.print(int(nmea.getMinute()));
+    Serial.print(':');
+    Serial.println(int(nmea.getSecond()));
 
-      long latitude_mdeg = nmea.getLatitude();
-      long longitude_mdeg = nmea.getLongitude();
-      Serial.print("Latitude (deg): ");
-      Serial.println(latitude_mdeg / 1000000., 6);
+    long latitude_mdeg = nmea.getLatitude();
+    long longitude_mdeg = nmea.getLongitude();
+    Serial.print("Latitude (deg): ");
+    Serial.println(latitude_mdeg / 1000000., 6);
 
-      Serial.print("Longitude (deg): ");
-      Serial.println(longitude_mdeg / 1000000., 6);
+    Serial.print("Longitude (deg): ");
+    Serial.println(longitude_mdeg / 1000000., 6);
 
-      long alt;
-      Serial.print("Altitude (m): ");
-      if (nmea.getAltitude(alt))
-         Serial.println(alt / 1000., 3);
-      else
-         Serial.println("not available");
+    long alt;
+    Serial.print("Altitude (m): ");
+    if (nmea.getAltitude(alt))
+      Serial.println(alt / 1000., 3);
+    else
+      Serial.println("not available");
 
-      lpp.addGPS(1, latitude_mdeg, longitude_mdeg, alt);
+    // Pack CayenneLPP Payload
+    lpp.addGPS(1, latitude_mdeg, longitude_mdeg, alt);
 
-      Serial.print("Speed: ");
-      Serial.println(nmea.getSpeed() / 1000., 3);
-      Serial.print("Course: ");
-      Serial.println(nmea.getCourse() / 1000., 3);
-      Serial.println("-----------------------");
-      nmea.clear();
-      
-   }
-   else
-   {
-      char c ;
-      if (idx == 0)
-      {
-         readI2C(buff);
-         delay(I2C_DELAY);
-      }
-      //Fetch the character one by one
-      c = buff[idx];
-      idx++;
-      idx %= 32;
-      //If we have a valid character pass it to the library
-      if ((uint8_t) c != 0xFF)
-      {
-          Serial.print(c);
-         nmea.process(c);
-      }
-   }
+    Serial.print("Speed: ");
+    Serial.println(nmea.getSpeed() / 1000., 3);
+    Serial.print("Course: ");
+    Serial.println(nmea.getCourse() / 1000., 3);
+    Serial.println("-----------------------");
+    nmea.clear();
+  }
+
+  while (!ppsTriggered) {
+    char c;
+    if (idx == 0) {
+      readI2C(buff);
+      delay(I2C_DELAY);
+    }
+    // Fetch the character one by one
+    c = buff[idx];
+    idx++;
+    idx %= 32;
+    // If we have a valid character pass it to the library
+    if ((uint8_t)c != 0xFF) {
+      Serial.print(c);
+      nmea.process(c);
+    }
+  }
 }
 
 void do_send(osjob_t *j) {
@@ -404,7 +393,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, ledState);
 
-  //Start the module
+  // Start the module
   pinMode(RESET_PIN, OUTPUT);
   digitalWrite(RESET_PIN, HIGH);
   Serial.println("Resetting GPS module ...");
@@ -415,30 +404,27 @@ void setup() {
   sendCommand((char *)"$PSTMSETPAR,1231,0x00000042");
   sendCommand((char *)"$PSTMSAVEPAR");
 
-  //Reset the device so that the changes could take plaace
+  // Reset the device so that the changes could take plaace
   sendCommand((char *)"$PSTMSRR");
 
   delay(4000);
 
-  //Reinitialize I2C after the reset
+  // Reinitialize I2C after the reset
   gps.begin();
 
-  //clear i2c buffer
+  // clear i2c buffer
   char c;
   idx = 0;
   memset(buff, 0, 32);
-  do
-  {
-    if (idx == 0)
-    {
-        readI2C(buff);
-        delay(I2C_DELAY);
+  do {
+    if (idx == 0) {
+      readI2C(buff);
+      delay(I2C_DELAY);
     }
     c = buff[idx];
     idx++;
     idx %= 32;
-  }
-  while ((uint8_t) c != 0xFF);
+  } while ((uint8_t)c != 0xFF);
 
   pinMode(2, INPUT);
   attachInterrupt(digitalPinToInterrupt(2), ppsHandler, RISING);
@@ -465,13 +451,13 @@ void setup() {
   LMIC_setLinkCheckMode(0);
   LMIC_setDrTxpow(DR_SF8, 20);
   // Sub-band 2 - Helium Network
-  LMIC_selectSubBand(1); // zero indexed 
+  LMIC_selectSubBand(1); // zero indexed
 
   // Start job (sending automatically starts OTAA too)
   do_send(&sendjob);
 }
 
-void loop() { 
+void loop() {
   os_runloop_once();
   readGPS();
 }
