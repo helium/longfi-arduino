@@ -5,19 +5,9 @@
 
 #include <CayenneLPP.h>
 
-#define DEBUG
-
-#ifdef DEBUG
-#define DEBUG_PRINT(x) Serial.print(x)
-#define DEBUG_PRINTLN(x) Serial.println(x)
-#else
-#define DEBUG_PRINT(x)
-#define DEBUG_PRINTLN(x)
-#endif
-
 // Sensors
-long longitude_mdeg;
-long latitude_mdeg;
+float longitude_mdeg;
+float latitude_mdeg;
 long alt;
 
 // Define Serial1 for STM32 Nucleo boards
@@ -56,49 +46,18 @@ void gpsHardwareReset() {
   delay(2000);
 }
 
-//
-// For normal use, we require that you edit the sketch to replace FILLMEIN
-// with values assigned by the TTN console. However, for regression tests,
-// we want to be able to compile these scripts. The regression tests define
-// COMPILE_REGRESSION_TEST, and in that case we define FILLMEIN to a non-
-// working but innocuous value.
-//
-#ifdef COMPILE_REGRESSION_TEST
-#define FILLMEIN 0
-#else
-#warning                                                                       \
-    "You must replace the values marked FILLMEIN with real values from the TTN control panel!"
-#define FILLMEIN (#dont edit this, edit the lines that use FILLMEIN)
-#endif
-
-// This EUI must be in little-endian format, so least-significant-byte
-// first. When copying an EUI from ttnctl output, this means to reverse
-// the bytes. For TTN issued EUIs the last bytes should be 0xD5, 0xB3,
-// 0x70.
+// This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8] = {FILL_ME_IN};
 void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
-//// This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
-// static const u1_t PROGMEM APPEUI[8] = {FILL_ME_IN};
-// void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 
-// This should also be in little endian format, see above.
+// This should also be in little endian format
+// These are user configurable values and Helium console permits anything
 static const u1_t PROGMEM DEVEUI[8] = {FILL_ME_IN};
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 
-//// This should also be in little endian format
-//// These are user configurable values and Helium console permits anything
-// static const u1_t PROGMEM DEVEUI[8] = {FILL_ME_IN};
-// void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
-
-// This key should be in big endian format (or, since it is not really a
-// number but a block of memory, endianness does not really apply). In
-// practice, a key taken from the TTN console can be copied as-is.
+// This is the "App Key" in Helium. It is big-endian (msb).
 static const u1_t PROGMEM APPKEY[16] = {FILL_ME_IN};
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
-
-//// This is the "App Key" in Helium. It is big-endian (msb).
-// static const u1_t PROGMEM APPKEY[16] = {FILL_ME_IN};
-// void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
 CayenneLPP lpp(51);
 static osjob_t sendjob;
@@ -173,23 +132,23 @@ void printHex2(unsigned v) {
 }
 
 void onEvent(ev_t ev) {
-  DEBUG_PRINT(os_getTime());
-  DEBUG_PRINT(": ");
+  Serial.print(os_getTime());
+  Serial.print(": ");
   switch (ev) {
   case EV_SCAN_TIMEOUT:
-    DEBUG_PRINTLN(F("EV_SCAN_TIMEOUT"));
+    Serial.println(F("EV_SCAN_TIMEOUT"));
     break;
   case EV_BEACON_FOUND:
-    DEBUG_PRINTLN(F("EV_BEACON_FOUND"));
+    Serial.println(F("EV_BEACON_FOUND"));
     break;
   case EV_BEACON_MISSED:
-    DEBUG_PRINTLN(F("EV_BEACON_MISSED"));
+    Serial.println(F("EV_BEACON_MISSED"));
     break;
   case EV_BEACON_TRACKED:
-    DEBUG_PRINTLN(F("EV_BEACON_TRACKED"));
+    Serial.println(F("EV_BEACON_TRACKED"));
     break;
   case EV_JOINING:
-    DEBUG_PRINTLN(F("EV_JOINING"));
+    Serial.println(F("EV_JOINING"));
     break;
   case EV_JOINED:
     Serial.println(F("EV_JOINED"));
@@ -306,59 +265,60 @@ void readGPS() {
     lpp.reset();
 
     // Output GPS information from previous second
-    DEBUG_PRINT("Valid fix: ");
-    DEBUG_PRINTLN(nmea.isValid() ? "yes" : "no");
+    Serial.print("Valid fix: ");
+    Serial.println(nmea.isValid() ? "yes" : "no");
 
-    DEBUG_PRINT("Nav. system: ");
+    Serial.print("Nav. system: ");
     if (nmea.getNavSystem())
-      DEBUG_PRINTLN(nmea.getNavSystem());
+      Serial.println(nmea.getNavSystem());
     else
-      DEBUG_PRINTLN("none");
+      Serial.println("none");
 
-    DEBUG_PRINT("Num. satellites: ");
-    DEBUG_PRINTLN(nmea.getNumSatellites());
+    Serial.print("Num. satellites: ");
+    Serial.println(nmea.getNumSatellites());
 
-    DEBUG_PRINT("HDOP: ");
-    DEBUG_PRINTLN(nmea.getHDOP() / 10.); //, 1);
+    Serial.print("HDOP: ");
+    Serial.println(nmea.getHDOP() / 10., 1);
 
-    DEBUG_PRINT("Date/time: ");
-    DEBUG_PRINT(nmea.getYear());
-    DEBUG_PRINT('-');
-    DEBUG_PRINT(int(nmea.getMonth()));
-    DEBUG_PRINT('-');
-    DEBUG_PRINT(int(nmea.getDay()));
-    DEBUG_PRINT('T');
-    DEBUG_PRINT(int(nmea.getHour()));
-    DEBUG_PRINT(':');
-    DEBUG_PRINT(int(nmea.getMinute()));
-    DEBUG_PRINT(':');
-    DEBUG_PRINTLN(int(nmea.getSecond()));
+    Serial.print("Date/time: ");
+    Serial.print(nmea.getYear());
+    Serial.print('-');
+    Serial.print(int(nmea.getMonth()));
+    Serial.print('-');
+    Serial.print(int(nmea.getDay()));
+    Serial.print('T');
+    Serial.print(int(nmea.getHour()));
+    Serial.print(':');
+    Serial.print(int(nmea.getMinute()));
+    Serial.print(':');
+    Serial.println(int(nmea.getSecond()));
 
     latitude_mdeg = nmea.getLatitude();
     longitude_mdeg = nmea.getLongitude();
 
-    DEBUG_PRINT("Latitude (deg): ");
-    DEBUG_PRINTLN(latitude_mdeg / 1000000.); //, 6);
+    Serial.print("Latitude (deg): ");
+    Serial.println(latitude_mdeg / 1000000., 6);
 
-    DEBUG_PRINT("Longitude (deg): ");
-    DEBUG_PRINTLN(longitude_mdeg / 1000000.); //, 6);
+    Serial.print("Longitude (deg): ");
+    Serial.println(longitude_mdeg / 1000000., 6);
 
     // long alt;
-    DEBUG_PRINT("Altitude (m): ");
+    Serial.print("Altitude (m): ");
     if (nmea.getAltitude(alt))
-      DEBUG_PRINTLN(alt / 1000.); //, 3);
+      Serial.println(alt / 1000., 3);
     else
-      DEBUG_PRINTLN("not available");
+      Serial.println("not available");
 
+    // if (nmea.isValid()) {
     lpp.addGPS(1, latitude_mdeg / 1000000, longitude_mdeg / 1000000,
                alt / 1000);
+    //};
+    Serial.print("Speed: ");
+    Serial.println(nmea.getSpeed() / 1000., 3);
+    Serial.print("Course: ");
+    Serial.println(nmea.getCourse() / 1000., 3);
 
-    DEBUG_PRINT("Speed: ");
-    DEBUG_PRINTLN(nmea.getSpeed() / 1000.); //, 3);
-    DEBUG_PRINT("Course: ");
-    DEBUG_PRINTLN(nmea.getCourse() / 1000.); //, 3);
-
-    DEBUG_PRINTLN("-----------------------");
+    Serial.println("-----------------------");
     nmea.clear();
   }
 
@@ -366,7 +326,7 @@ void readGPS() {
   while (!ppsTriggered && gps.available()) {
     // Fetch the character one by one
     char c = gps.read();
-    DEBUG_PRINT(c);
+    Serial.print(c);
     // Pass the character to the library
     nmea.process(c);
   }
@@ -375,11 +335,11 @@ void readGPS() {
 void do_send(osjob_t *j) {
   // Check if there is not a current TX/RX job running
   if (LMIC.opmode & OP_TXRXPEND) {
-    DEBUG_PRINTLN(F("OP_TXRXPEND, not sending"));
+    Serial.println(F("OP_TXRXPEND, not sending"));
   } else {
     // Prepare upstream data transmission at the next possible time.
     LMIC_setTxData2(1, lpp.getBuffer(), lpp.getSize(), 0);
-    DEBUG_PRINTLN(F("Packet queued"));
+    Serial.println(F("Packet queued"));
   }
   // Next TX is scheduled after TX_COMPLETE event.
 }
@@ -387,7 +347,7 @@ void do_send(osjob_t *j) {
 void setup(void) {
   delay(3000);
   console.begin(115200); // console
-  DEBUG_PRINTLN("Starting #IoTForGood GPS Example...");
+  Serial.println("Starting #IoTForGood GPS Example...");
 
   gps.begin(9600); // gps
 
@@ -397,9 +357,10 @@ void setup(void) {
   // Start the module
   pinMode(RESET_PIN, OUTPUT);
   digitalWrite(RESET_PIN, HIGH);
-  DEBUG_PRINTLN("Resetting GPS module ...");
+  Serial.println();
+  Serial.println("Resetting GPS module ...");
   gpsHardwareReset();
-  DEBUG_PRINTLN("... done");
+  Serial.println("done.");
 
   // Change the echoing messages to the ones recognized by the MicroNMEA library
   MicroNMEA::sendSentence(gps, "$PSTMSETPAR,1201,0x00000042");
