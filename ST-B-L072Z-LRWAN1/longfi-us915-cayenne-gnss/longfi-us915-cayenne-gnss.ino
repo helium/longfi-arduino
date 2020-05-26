@@ -1,5 +1,10 @@
 #include <MicroNMEA.h>
 #include <SPI.h>
+#include <arduino_lmic.h>
+#include <arduino_lmic_hal_boards.h>
+#include <arduino_lmic_hal_configuration.h>
+#include <arduino_lmic_lorawan_compliance.h>
+#include <arduino_lmic_user_configuration.h>
 #include <hal/hal.h>
 #include <lmic.h>
 
@@ -65,7 +70,7 @@ void do_send(osjob_t *j);
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
-const unsigned TX_INTERVAL = 10;
+const unsigned TX_INTERVAL = 60;
 
 // Pin mapping
 //
@@ -309,10 +314,9 @@ void readGPS() {
     else
       Serial.println("not available");
 
-    // if (nmea.isValid()) {
     lpp.addGPS(1, latitude_mdeg / 1000000, longitude_mdeg / 1000000,
                alt / 1000);
-    //};
+
     Serial.print("Speed: ");
     Serial.println(nmea.getSpeed() / 1000., 3);
     Serial.print("Course: ");
