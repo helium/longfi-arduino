@@ -9,7 +9,7 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 * [longfi-us915](ST-B-L072Z-LRWAN1/longfi-us915)
 * [longfi-us915-button](ST-B-L072Z-LRWAN1/longfi-us915-button)
 * [longfi-us915-cayenne-sensor](ST-B-L072Z-LRWAN1/longfi-us915-cayenne-sensor)
-* [longfi-us915-cargo-gps](GPS)
+* [longfi-us915-cayenne-gnss](ST-B-L072Z-LRWAN1/longfi-us915-cayenne-gnss)
 
 ### MCCI Catena 4610
 * [longfi-us915](MCCI-Catena-4610/longfi-us915)
