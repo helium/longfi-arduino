@@ -52,5 +52,5 @@ void loop( void )
         LoRaWAN.sendPacket(1, payload, sizeof(payload));
     }
 
-    delay(20000);
+    delay(20000); //20 Seconds
 }

@@ -128,5 +128,5 @@ void loop( void )
     LoRaWAN.sendPacket(1, lpp.getBuffer(), lpp.getSize());
   }
 
-  delay(20000);
+  delay(20000); //20 Seconds
 }
