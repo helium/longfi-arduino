@@ -33,7 +33,7 @@ Find the section at the bottom called Additional Boards Manager URLs:
 ```
 https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_index.json
 ```
-![arduino_preferences](https://i.gyazo.com/558b58a463578b28e17ffb763a592c69.png)
+![arduino_preferences](https://i.gyazo.com/148c4bc3646aaf71f8d9a0499c82fec4.png)
 
 3. Open Boards Manager: Select Tools > Board: > Boards Manager...
 4. Search for "Tlera Corp STM32L0 Boards"
