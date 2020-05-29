@@ -39,8 +39,8 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 4. Search for "Tlera Corp STM32L0 Boards"
 5. Select the newest version and install.
 
-### Required Temporary Manual Fix
-Until this fix has been released you will need to insert three lines of code in a library file.
+### Temporary Manual Fix
+This issue has been fixed but not released yet, until then you will need to insert three lines of code in a library file.
 Insert the following:
 ```
 #ifndef NULL
