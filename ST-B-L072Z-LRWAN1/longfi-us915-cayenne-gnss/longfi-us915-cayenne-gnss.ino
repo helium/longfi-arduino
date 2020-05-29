@@ -1,31 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
- * Copyright (c) 2018 Terry Moore, MCCI
- *
- * Permission is hereby granted, free of charge, to anyone
- * obtaining a copy of this document and accompanying files,
- * to do whatever they want with them without any restriction,
- * including, but not limited to, copying, modification and redistribution.
- * NO WARRANTY OF ANY KIND IS PROVIDED.
- *
- * This example sends a valid LoRaWAN packet with payload "Hello,
- * world!", using frequency and encryption settings matching those of
- * the The Things Network. It's pre-configured for the Adafruit
- * Feather M0 LoRa.
- *
- *******************************************************************************/
-
-/*******************************************************************************
- *
- * For Helium developers, follow the Arduino Quickstart guide:
- * https://developer.helium.com/device/arduino-quickstart
- * TLDR: register your device on the console:
- * https://console.helium.com/devices
- *
- * The App EUI (as lsb) and App Key (as msb) get inserted below.
- *
- *******************************************************************************/
-
+#include <MicroNMEA.h>
 #include <SPI.h>
 #include <arduino_lmic.h>
 #include <arduino_lmic_hal_boards.h>
@@ -34,6 +7,49 @@
 #include <arduino_lmic_user_configuration.h>
 #include <hal/hal.h>
 #include <lmic.h>
+
+#include <CayenneLPP.h>
+
+// Sensors
+float longitude_mdeg;
+float latitude_mdeg;
+long alt;
+
+// Define Serial1 for STM32 Nucleo boards
+#ifdef ARDUINO_ARCH_STM32
+HardwareSerial Serial1(PA10, PA9);
+#endif
+
+#define RESET_PIN 7
+
+// Refer to serial devices by use
+HardwareSerial &console = Serial;
+HardwareSerial &gps = Serial1;
+
+// MicroNMEA library structures
+char nmeaBuffer[100];
+MicroNMEA nmea(nmeaBuffer, sizeof(nmeaBuffer));
+
+bool ledState = LOW;
+volatile bool ppsTriggered = false;
+
+void ppsHandler(void);
+
+void ppsHandler(void) { ppsTriggered = true; }
+
+void gpsHardwareReset() {
+  // Empty input buffer
+  while (gps.available())
+    gps.read();
+
+  // reset the device
+  digitalWrite(RESET_PIN, LOW);
+  delay(50);
+  digitalWrite(RESET_PIN, HIGH);
+
+  // wait for reset to apply
+  delay(2000);
+}
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8] = {FILL_ME_IN};
@@ -48,8 +64,9 @@ void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 static const u1_t PROGMEM APPKEY[16] = {FILL_ME_IN};
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
-static uint8_t mydata[] = "Hello, world!";
+CayenneLPP lpp(51);
 static osjob_t sendjob;
+void do_send(osjob_t *j);
 
 // Schedule TX every this many seconds (might become longer due to duty
 // cycle limitations).
@@ -105,10 +122,19 @@ const lmic_pinmap lmic_pins = {
 #include "arduino_lmic_hal_boards.h"
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Catena4610();
 #elif defined(ARDUINO_DISCO_L072CZ_LRWAN1)
+#include "arduino_lmic_hal_boards.h"
+// Pin mapping Discovery
 const lmic_pinmap lmic_pins = *Arduino_LMIC::GetPinmap_Disco_L072cz_Lrwan1();
 #else
 #error "Unknown target"
 #endif
+
+void printHex2(unsigned v) {
+  v &= 0xff;
+  if (v < 16)
+    Serial.print('0');
+  Serial.print(v, HEX);
+}
 
 void onEvent(ev_t ev) {
   Serial.print(os_getTime());
@@ -129,9 +155,6 @@ void onEvent(ev_t ev) {
   case EV_JOINING:
     Serial.println(F("EV_JOINING"));
     break;
-  case EV_JOIN_TXCOMPLETE:
-    Serial.println(F("EV_JOIN_TXCOMPLETE"));
-    break;
   case EV_JOINED:
     Serial.println(F("EV_JOINED"));
     {
@@ -144,20 +167,20 @@ void onEvent(ev_t ev) {
       Serial.println(netid, DEC);
       Serial.print("devaddr: ");
       Serial.println(devaddr, HEX);
-      Serial.print("artKey: ");
+      Serial.print("AppSKey: ");
       for (size_t i = 0; i < sizeof(artKey); ++i) {
         if (i != 0)
           Serial.print("-");
-        Serial.print(artKey[i], HEX);
+        printHex2(artKey[i]);
       }
       Serial.println("");
-      Serial.print("nwkKey: ");
+      Serial.print("NwkSKey: ");
       for (size_t i = 0; i < sizeof(nwkKey); ++i) {
         if (i != 0)
           Serial.print("-");
-        Serial.print(nwkKey[i], HEX);
+        printHex2(nwkKey[i]);
       }
-      Serial.println("");
+      Serial.println();
     }
     // Disable link check validation (automatically enabled
     // during join, but because slow data rates change max TX
@@ -165,12 +188,12 @@ void onEvent(ev_t ev) {
     LMIC_setLinkCheckMode(0);
     break;
   /*
-  || This event is defined but not used in the code. No
-  || point in wasting codespace on it.
-  ||
-  || case EV_RFU1:
-  ||     Serial.println(F("EV_RFU1"));
-  ||     break;
+    || This event is defined but not used in the code. No
+    || point in wasting codespace on it.
+    ||
+    || case EV_RFU1:
+    ||     DEBUG_PRINTLN(F("EV_RFU1"));
+    ||     break;
   */
   case EV_JOIN_FAILED:
     Serial.println(F("EV_JOIN_FAILED"));
@@ -209,20 +232,107 @@ void onEvent(ev_t ev) {
     Serial.println(F("EV_LINK_ALIVE"));
     break;
   /*
-  || This event is defined but not used in the code. No
-  || point in wasting codespace on it.
-  ||
-  || case EV_SCAN_FOUND:
-  ||    Serial.println(F("EV_SCAN_FOUND"));
-  ||    break;
+    || This event is defined but not used in the code. No
+    || point in wasting codespace on it.
+    ||
+    || case EV_SCAN_FOUND:
+    ||    DEBUG_PRINTLN(F("EV_SCAN_FOUND"));
+    ||    break;
   */
   case EV_TXSTART:
     Serial.println(F("EV_TXSTART"));
     break;
+  case EV_TXCANCELED:
+    Serial.println(F("EV_TXCANCELED"));
+    break;
+  case EV_RXSTART:
+    /* do not print anything -- it wrecks timing */
+    break;
+  case EV_JOIN_TXCOMPLETE:
+    Serial.println(F("EV_JOIN_TXCOMPLETE: no JoinAccept"));
+    break;
+
   default:
     Serial.print(F("Unknown event: "));
     Serial.println((unsigned)ev);
     break;
+  }
+}
+
+void readGPS() {
+  // If a message is received, print all the info
+  if (ppsTriggered) {
+    ppsTriggered = false;
+    ledState = !ledState;
+    digitalWrite(LED_BUILTIN, ledState);
+
+    // Clear Payload
+    lpp.reset();
+
+    // Output GPS information from previous second
+    Serial.print("Valid fix: ");
+    Serial.println(nmea.isValid() ? "yes" : "no");
+
+    Serial.print("Nav. system: ");
+    if (nmea.getNavSystem())
+      Serial.println(nmea.getNavSystem());
+    else
+      Serial.println("none");
+
+    Serial.print("Num. satellites: ");
+    Serial.println(nmea.getNumSatellites());
+
+    Serial.print("HDOP: ");
+    Serial.println(nmea.getHDOP() / 10., 1);
+
+    Serial.print("Date/time: ");
+    Serial.print(nmea.getYear());
+    Serial.print('-');
+    Serial.print(int(nmea.getMonth()));
+    Serial.print('-');
+    Serial.print(int(nmea.getDay()));
+    Serial.print('T');
+    Serial.print(int(nmea.getHour()));
+    Serial.print(':');
+    Serial.print(int(nmea.getMinute()));
+    Serial.print(':');
+    Serial.println(int(nmea.getSecond()));
+
+    latitude_mdeg = nmea.getLatitude();
+    longitude_mdeg = nmea.getLongitude();
+
+    Serial.print("Latitude (deg): ");
+    Serial.println(latitude_mdeg / 1000000., 6);
+
+    Serial.print("Longitude (deg): ");
+    Serial.println(longitude_mdeg / 1000000., 6);
+
+    // long alt;
+    Serial.print("Altitude (m): ");
+    if (nmea.getAltitude(alt))
+      Serial.println(alt / 1000., 3);
+    else
+      Serial.println("not available");
+
+    lpp.addGPS(1, latitude_mdeg / 1000000, longitude_mdeg / 1000000,
+               alt / 1000);
+
+    Serial.print("Speed: ");
+    Serial.println(nmea.getSpeed() / 1000., 3);
+    Serial.print("Course: ");
+    Serial.println(nmea.getCourse() / 1000., 3);
+
+    Serial.println("-----------------------");
+    nmea.clear();
+  }
+
+  // While the message isn't complete
+  while (!ppsTriggered && gps.available()) {
+    // Fetch the character one by one
+    char c = gps.read();
+    Serial.print(c);
+    // Pass the character to the library
+    nmea.process(c);
   }
 }
 
@@ -232,32 +342,51 @@ void do_send(osjob_t *j) {
     Serial.println(F("OP_TXRXPEND, not sending"));
   } else {
     // Prepare upstream data transmission at the next possible time.
-    LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
+    LMIC_setTxData2(1, lpp.getBuffer(), lpp.getSize(), 0);
     Serial.println(F("Packet queued"));
   }
   // Next TX is scheduled after TX_COMPLETE event.
 }
 
-void setup() {
-  delay(5000);
-  while (!Serial)
-    ;
-  Serial.begin(9600);
-  Serial.println(F("Starting"));
+void setup(void) {
+  delay(3000);
+  console.begin(115200); // console
+  Serial.println("Starting #IoTForGood GPS Example...");
+
+  gps.begin(9600); // gps
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, ledState);
+
+  // Start the module
+  pinMode(RESET_PIN, OUTPUT);
+  digitalWrite(RESET_PIN, HIGH);
+  Serial.println();
+  Serial.println("Resetting GPS module ...");
+  gpsHardwareReset();
+  Serial.println("done.");
+
+  // Change the echoing messages to the ones recognized by the MicroNMEA library
+  MicroNMEA::sendSentence(gps, "$PSTMSETPAR,1201,0x00000042");
+  MicroNMEA::sendSentence(gps, "$PSTMSAVEPAR");
+
+  // Reset the device so that the changes could take plaace
+  MicroNMEA::sendSentence(gps, "$PSTMSRR");
+
+  delay(4000);
+
+  // clear serial buffer
+  while (gps.available())
+    gps.read();
+
+  pinMode(6, INPUT);
+  attachInterrupt(digitalPinToInterrupt(6), ppsHandler, RISING);
 
 #if defined(ARDUINO_DISCO_L072CZ_LRWAN1)
   SPI.setMOSI(RADIO_MOSI_PORT);
   SPI.setMISO(RADIO_MISO_PORT);
   SPI.setSCLK(RADIO_SCLK_PORT);
   SPI.setSSEL(RADIO_NSS_PORT);
-// SPI.begin();
-#endif
-
-#ifdef VCC_ENABLE
-  // For Pinoccio Scout boards
-  pinMode(VCC_ENABLE, OUTPUT);
-  digitalWrite(VCC_ENABLE, HIGH);
-  delay(1000);
 #endif
 
   // LMIC init
@@ -274,48 +403,15 @@ void setup() {
   LMIC_setClockError(1 * MAX_CLOCK_ERROR / 40);
 
   LMIC_setLinkCheckMode(0);
-  LMIC_setDrTxpow(DR_SF8, 20);
+  LMIC_setDrTxpow(DR_SF7, 14);
   // Sub-band 2 - Helium Network
-  LMIC_selectSubBand(1); // zero indexed 
+  LMIC_selectSubBand(1); // zero indexed
 
   // Start job (sending automatically starts OTAA too)
   do_send(&sendjob);
 }
 
-void loop() { os_runloop_once(); }
-
-namespace Arduino_LMIC {
-
-class HalConfiguration_Disco_L072cz_Lrwan1_t : public HalConfiguration_t {
-public:
-  enum DIGITAL_PINS : uint8_t {
-    PIN_SX1276_NSS = 37,
-    PIN_SX1276_NRESET = 33,
-    PIN_SX1276_DIO0 = 38,
-    PIN_SX1276_DIO1 = 39,
-    PIN_SX1276_DIO2 = 40,
-    PIN_SX1276_RXTX = 21,
-  };
-
-  virtual bool queryUsingTcxo(void) override { return false; };
-};
-// save some typing by bringing the pin numbers into scope
-static HalConfiguration_Disco_L072cz_Lrwan1_t myConfig;
-
-static const HalPinmap_t myPinmap = {
-    .nss = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NSS,
-    .rxtx = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_RXTX,
-    .rst = HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_NRESET,
-
-    .dio =
-        {
-            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO0,
-            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO1,
-            HalConfiguration_Disco_L072cz_Lrwan1_t::PIN_SX1276_DIO2,
-        },
-    .rxtx_rx_active = 1,
-    .rssi_cal = 10,
-    .spi_freq = 8000000, /* 8MHz */
-    .pConfig = &myConfig};
-
-}; // end namespace Arduino_LMIC
+void loop(void) {
+  os_runloop_once();
+  readGPS();
+}
