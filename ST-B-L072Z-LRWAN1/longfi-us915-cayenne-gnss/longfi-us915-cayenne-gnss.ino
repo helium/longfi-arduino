@@ -7,22 +7,20 @@ const char *devEui = "FILL_ME_IN";
 const char *appEui = "FILL_ME_IN";
 const char *appKey = "FILL_ME_IN";
 
-const uint32_t TX_INTERVAL = 10000;
+#define RESET_PIN 7
+
+const uint32_t TX_INTERVAL = 60000; // 60 Seconds
 TimerMillis timer_send;
 
-// Sensors
 float longitude_mdeg;
 float latitude_mdeg;
 long alt;
-
-#define RESET_PIN 7
 
 // Refer to serial devices by use
 HardwareSerial &console = Serial;
 HardwareSerial &gps = Serial1;
 
 CayenneLPP lpp(51);
-
 static volatile bool uplink_attempted;
 
 // MicroNMEA library structures
@@ -86,7 +84,7 @@ void setupGPS() {
 }
 
 void readGPS() {
-  // If a message is received, print all the info
+  // If a message is received
   if (ppsTriggered) {
     ppsTriggered = false;
     ledState = !ledState;
@@ -95,60 +93,13 @@ void readGPS() {
     // Clear Payload
     lpp.reset();
 
-    // Output GPS information from previous second
-    Serial.print("Valid fix: ");
-    Serial.println(nmea.isValid() ? "yes" : "no");
-
-    Serial.print("Nav. system: ");
-    if (nmea.getNavSystem())
-      Serial.println(nmea.getNavSystem());
-    else
-      Serial.println("none");
-
-    Serial.print("Num. satellites: ");
-    Serial.println(nmea.getNumSatellites());
-
-    Serial.print("HDOP: ");
-    Serial.println(nmea.getHDOP() / 10., 1);
-
-    Serial.print("Date/time: ");
-    Serial.print(nmea.getYear());
-    Serial.print('-');
-    Serial.print(int(nmea.getMonth()));
-    Serial.print('-');
-    Serial.print(int(nmea.getDay()));
-    Serial.print('T');
-    Serial.print(int(nmea.getHour()));
-    Serial.print(':');
-    Serial.print(int(nmea.getMinute()));
-    Serial.print(':');
-    Serial.println(int(nmea.getSecond()));
-
     latitude_mdeg = nmea.getLatitude();
     longitude_mdeg = nmea.getLongitude();
-
-    Serial.print("Latitude (deg): ");
-    Serial.println(latitude_mdeg / 1000000., 6);
-
-    Serial.print("Longitude (deg): ");
-    Serial.println(longitude_mdeg / 1000000., 6);
-
-    // long alt;
-    Serial.print("Altitude (m): ");
-    if (nmea.getAltitude(alt))
-      Serial.println(alt / 1000., 3);
-    else
-      Serial.println("not available");
+    nmea.getAltitude(alt);
 
     lpp.addGPS(1, latitude_mdeg / 1000000, longitude_mdeg / 1000000,
                alt / 1000);
 
-    Serial.print("Speed: ");
-    Serial.println(nmea.getSpeed() / 1000., 3);
-    Serial.print("Course: ");
-    Serial.println(nmea.getCourse() / 1000., 3);
-
-    Serial.println("-----------------------");
     nmea.clear();
   }
 
@@ -156,7 +107,7 @@ void readGPS() {
   while (!ppsTriggered && gps.available()) {
     // Fetch the character one by one
     char c = gps.read();
-    Serial.print(c);
+    // Serial.print(c);
     // Pass the character to the library
     nmea.process(c);
   }
@@ -164,7 +115,6 @@ void readGPS() {
 
 void async_timer_send() {
   if (LoRaWAN.joined() && !LoRaWAN.busy()) {
-    Serial.println("Timer Send");
     // Send Packet
     LoRaWAN.sendPacket(1, lpp.getBuffer(), lpp.getSize());
     uplink_attempted = true;
@@ -185,6 +135,8 @@ void setup(void) {
   LoRaWAN.setSubBand(2);
   // Disable Adaptive Data Rate
   LoRaWAN.setADR(false);
+  // Set Data Rate 1 - Max Payload 53 Bytes
+  LoRaWAN.setDataRate(1);
   // Device IDs and Key
   LoRaWAN.joinOTAA(appEui, appKey, devEui);
 
@@ -218,6 +170,15 @@ void loop(void) {
     Serial.print(", DownLinkCounter: ");
     Serial.print(LoRaWAN.getDownLinkCounter());
     Serial.println(" )");
+    Serial.print("Latitude (deg): ");
+    Serial.print(latitude_mdeg / 1000000., 6);
+    Serial.print(" Longitude (deg): ");
+    Serial.print(longitude_mdeg / 1000000., 6);
+    Serial.print("  Altitude (m): ");
+    if (nmea.getAltitude(alt))
+      Serial.println(alt / 1000., 3);
+    else
+      Serial.println("not available");
 
     uplink_attempted = false;
   }

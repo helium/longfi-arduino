@@ -40,19 +40,6 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 4. Search for "Tlera Corp STM32L0 Boards"
 5. Select the newest version and install.
 
-### Temporary Manual Fix
-This issue has been fixed but not released yet, until then you will need to insert three lines of code in a library file.
-Insert the following:
-```
-#ifndef NULL
-#define NULL  0
-#endif
-```
-Into the file found here:
-linux: /home/{user}/Arduino/libraries/IBM_LMIC_framework/src/lmic  
-windows: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
-mac os: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
-
 ![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
 ## Programming (Uploading):
 
