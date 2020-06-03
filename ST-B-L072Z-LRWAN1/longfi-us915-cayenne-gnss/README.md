@@ -14,6 +14,9 @@ This example demonstrates sending GNSS data in [CayenneLPP](https://developers.m
 [X-NUCLEO-GNSS1A1 Product Page](https://www.st.com/en/ecosystems/x-nucleo-gnss1a1.html)  
 [X-NUCLEO-GNSS1A1 User Manual](https://www.st.com/resource/en/user_manual/dm00453103-getting-started-with-the-xnucleognss1a1-expansion-board-based-on-teseoliv3f-tiny-gnss-module-for-stm32-nucleo-stmicroelectronics.pdf)  
 
+**Important Note**  
+This expansion board uses the same pin that is used by the user button on the B-L072Z-LRWAN1 board. This may cause issues if you are trying to use the user button with this expansion board.
+
 ## Required Driver (Windows Only)
 Download driver [here](https://www.st.com/en/development-tools/stsw-link009.html).
 
