@@ -47,7 +47,7 @@ Insert the following:
 #define NULL  0
 #endif
 ```
-Into the file found here:
+Into the file found here:  
 linux: /home/{user}/Arduino/libraries/IBM_LMIC_framework/src/lmic  
 windows: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
 mac os: Documents/Arduino/libraries/IBM_LMIC_framework/src/lmic  
