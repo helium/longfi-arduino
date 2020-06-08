@@ -50,7 +50,7 @@ Insert the following three lines below at line 30 in file `Callback.h` found at 
 Into the file found here:  
 linux: /home/{user}/.arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino  
 windows: C:\Users\\{User}\AppData\Local\Arduino15\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino  
-windows alternative: C:\Users\{user}\Documents\ArduinoData\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino  
+windows alternative: C:\Users\\{user}\Documents\ArduinoData\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino  
 mac os:  /Users/{user}/Library/Arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino  
 
 ![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
