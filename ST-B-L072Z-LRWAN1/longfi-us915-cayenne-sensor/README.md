@@ -41,16 +41,16 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 
 ### Temporary Manual Fix
 This issue has been fixed but not released yet, until then you will need to insert three lines of code in a library file.
-Insert the following three lines below at line 30 in file Callback.h found at the path below.
+Insert the following three lines below at line 30 in file Callback.h found at the path below.  
 ```
 #ifndef NULL
 #define NULL  0
 #endif
 ```
 Into the file found here:  
-linux: /home/{user}/.arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino
-windows: C:\Users\{User}\AppData\Local\Arduino15\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino
-mac os:  /Users/{user}/Library/Arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino
+linux: /home/{user}/.arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino  
+windows: C:\Users\{User}\AppData\Local\Arduino15\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino  
+mac os:  /Users/{user}/Library/Arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino  
 
 ![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
 ## Programming (Uploading):
