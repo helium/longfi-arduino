@@ -2,7 +2,7 @@
 
 This example demonstrates sending a simple data packet using a Heltec Wifi LoRa 32 V2 development board. Please follow every instruction step below from top to bottom.
 
-[Helium Quickstart](https://developer.helium.com/devices/arduino-quickstart/heltec-wifi-lora-32-v2)
+[Quickstart Guide](https://developer.helium.com/devices/arduino-quickstart/heltec-wifi-lora-32-v2)
 [Heltec LoRa 32 V2 Product Page](https://heltec.org/project/wifi-lora-32/)  
 [Heltec LoRa 32 V2 Docs](https://heltec-automation-docs.readthedocs.io/en/latest/esp32/index.html)
 

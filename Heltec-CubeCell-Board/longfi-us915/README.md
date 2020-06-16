@@ -2,7 +2,7 @@
 
 This example demonstrates sending a simple data packet using a Heltec CubeCell Board . Please follow every instruction step below from top to bottom.
 
-[Helium Quickstart](https://developer.helium.com/devices/arduino-quickstart/heltec-cubecell-board)
+[Quickstart Guide](https://developer.helium.com/devices/arduino-quickstart/heltec-cubecell-board)
 [Heltec CubeCell Board Product Page](https://heltec.org/project/htcc-ab01/)  
 [Heltec CubeCell Board Docs](https://heltec-automation-docs.readthedocs.io/en/latest/cubecell/quick_start.html#)
 
