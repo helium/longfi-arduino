@@ -2,6 +2,7 @@
 
 This example demonstrates sending a simple data packet using a Heltec CubeCell Board . Please follow every instruction step below from top to bottom.
 
+[Helium Quickstart](https://developer.helium.com/devices/arduino-quickstart/heltec-cubecell-board)
 [Heltec CubeCell Board Product Page](https://heltec.org/project/htcc-ab01/)  
 [Heltec CubeCell Board Docs](https://heltec-automation-docs.readthedocs.io/en/latest/cubecell/quick_start.html#)
 
@@ -21,7 +22,7 @@ Arduino IDE:
 
 ## Upload `LoRaWAN` example
 Arduino IDE:  
-1. Select File -> Examples -> LoRa -> LoRaWAN
+1. Select File -> Open -> longfi-arduino/Heltec-CubeCell-Boardc/longfi-us915.ino
 2. Select Tools -> Port: "COM# or ttyACM#" 
 3. Enter DevEUI(msb), AppEUI(msb), and AppKey(msb) from Helium Console, at lines 14, 15, 16. 
 ```

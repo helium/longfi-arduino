@@ -2,6 +2,7 @@
 
 This example demonstrates sending a simple data packet using a Heltec Wifi LoRa 32 V2 development board. Please follow every instruction step below from top to bottom.
 
+[Helium Quickstart](https://developer.helium.com/devices/arduino-quickstart/heltec-wifi-lora-32-v2)
 [Heltec LoRa 32 V2 Product Page](https://heltec.org/project/wifi-lora-32/)  
 [Heltec LoRa 32 V2 Docs](https://heltec-automation-docs.readthedocs.io/en/latest/esp32/index.html)
 
@@ -42,9 +43,24 @@ Serial Monitor Window
 2. Enter ChipID
 3. Save license field, will look like `0x########,0x#########,0x########,0x########`	
 
-## Upload `OTAA_OLED` example
+## Required Change to Default DataRate
+The Helium network does not fully support ADR (Adapative Data Rate), read more [here](https://developer.helium.com/longfi/mac-commands-fopts-adr#linkadrreq-linkadrans). In this example sketch, ADR is turned off, therefore you must manually set the desired data rate for your payload size manually. This library uses a default data rate that is not supported by the Helium Network so you must change it to one in the following range DR_0 - DR_4. To do this change the default data rate on line 20 in the file found below for your operating system.
+
+
+Change line 20 to:
+```
+#define LORAWAN_DEFAULT_DATARATE                    DR_0
+```
+In File:
+```
+linux: /home/{user}/Arduino/libraries/ESP32_LoRaWAN-master/src/ESP32_LoRaWAN.cpp 
+windows: Documents\Arduino\libraries\ESP32_LoRaWAN-master\src\ESP32_LoRaWAN.cpp
+mac os: Documents/Arduino/librariesESP32_LoRaWAN-master/src/ESP32_LoRaWAN.cpp
+```
+
+## Upload `longfi-us915` example
 Arduino IDE:  
-1. Select File -> Examples -> ESP32_LoRaWAN -> OTAA_LED
+1. Select File -> Open -> longfi-arduino/Heltec-WiFi-LoRa-32-V2/longfi-us915.ino
 2. Enter License Key at line 32 
 ```
 uint32_t  license[4] = {`0x########,0x#########,0x########,0x########};
@@ -61,3 +77,4 @@ uint8_t AppKey[] = { FILL_ME_IN };
 Serial Monitor Window
 1. Select 115200 baud from bottom right dropdown.
 2. Wait for device to successfully join, may take 1-3 min, and show several failures. Do not be alarmed by the failures, it is expected.
+
