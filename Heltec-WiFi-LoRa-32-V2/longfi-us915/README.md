@@ -7,8 +7,15 @@ This example demonstrates sending a simple data packet using a Heltec Wifi LoRa 
 [Heltec LoRa 32 V2 Docs](https://heltec-automation-docs.readthedocs.io/en/latest/esp32/index.html)
 
 ## Installing the Heltec ESP32 Library
-
 From the Arduino IDE, open the Library Manager (Sketch->Include Library->Manage Libraries). In the search box, type Heltec ESP32 and look for `Heltec ESP32 Dev-Boards`. Select the latest version and install.
+
+## Install Heltec ESP32 LoRaWAN Library
+Download [this](https://github.com/HelTecAutomation/ESP32_LoRaWAN/archive/master.zip) find into the directory below and unzip.
+```
+linux: /home/{user}/Arduino/libraries 
+windows: Documents\Arduino\libraries
+mac os: Documents/Arduino/libraries
+```
 
 ## Install Serial Driver
 Find Directions [here](https://heltec-automation-docs.readthedocs.io/en/latest/general/establish_serial_connection.html).
@@ -55,7 +62,7 @@ In File:
 ```
 linux: /home/{user}/Arduino/libraries/ESP32_LoRaWAN-master/src/ESP32_LoRaWAN.cpp 
 windows: Documents\Arduino\libraries\ESP32_LoRaWAN-master\src\ESP32_LoRaWAN.cpp
-mac os: Documents/Arduino/librariesESP32_LoRaWAN-master/src/ESP32_LoRaWAN.cpp
+mac os: Documents/Arduino/libraries/ESP32_LoRaWAN-master/src/ESP32_LoRaWAN.cpp
 ```
 
 ## Upload `longfi-us915` example
