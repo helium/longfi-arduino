@@ -39,6 +39,8 @@ https://grumpyoldpizza.github.io/ArduinoCore-stm32l0/package_stm32l0_boards_inde
 4. Search for "Tlera Corp STM32L0 Boards"
 5. Select the newest version and install.
 
+![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
+
 ### Temporary Manual Fix
 This issue has been fixed but not released yet, until then you will need to insert three lines of code in a library file.
 Insert the following three lines below at line 30 in file `Callback.h` found at the path below.  
@@ -53,7 +55,6 @@ windows: C:\Users\\{User}\AppData\Local\Arduino15\packages\TleraCorp\hardware\st
 windows alternative: C:\Users\\{user}\Documents\ArduinoData\packages\TleraCorp\hardware\stm32l0\0.0.10\cores\arduino  
 mac os:  /Users/{user}/Library/Arduino15/packages/TleraCorp/hardware/stm32l0/0.0.10/cores/arduino  
 
-![arduino_board_support](https://i.gyazo.com/216457ad64b8f85016d1b6d7cc6df044.png)
 ## Programming (Uploading):
 
 Arduino IDE:   
