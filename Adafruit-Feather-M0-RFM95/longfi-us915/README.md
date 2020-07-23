@@ -1,8 +1,8 @@
 # Adafruit Feather M0 RFM95
 
-[Quickstart Guide](https://developer.helium.com/devices/arduino-quickstart/adafruit-feather-m0-rfm95)
+[Quickstart Guide](https://developer.helium.com/devices/arduino-quickstart/adafruit-feather-m0-rfm95)  
 [Adafruit Feather M0 with RFM95 Product Page](https://www.adafruit.com/product/3178)  
-[Adafruit Feather M0 with RFM95 Datasheets & Files](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/downloads).
+[Adafruit Feather M0 with RFM95 Datasheets & Files](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module/downloads).  
 
 ## Required Arduino Libraries
 
