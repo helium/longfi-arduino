@@ -12,17 +12,19 @@ Find Directions [here](https://heltec-automation-docs.readthedocs.io/en/latest/g
 ## Install CubeCell Board Support
 Find Directions [here](https://heltec-automation-docs.readthedocs.io/en/latest/cubecell/quick_start.html#install-cubecell-relevant-framework)
 
-### Manual updates to the Heltec runtime libraries
-## Data Rate
+## Manual updates to the Heltec runtime libraries
+#### Verify Data Rate
+
 Some versions of Heltec's runtime libraries have set a default configuration variable to a value that is incompatible with the Helium network, especially when the Heltec device is configured for the North American market. Before attempting to use the libraries it is best to verify the value of the variable.
 
 The top level location of the file of interest depends on the library installation directory of the IDE you are using, Arduino IDE vs Platformio IDE, as well as the host platform, Windows vs Linux vs Mac. With the Arduino IDE location, the library version number may also be different depending on when you download the package.
 
 For example on a Linux platform the files should be located at:
 
-- Arduino IDE library version 1.0.0:  ~/.arduino15/packages/CubeCell/hardware/CubeCell/1.0.0/libraries/LoRa/src/LoRaWan_APP.cpp
+- Arduino IDE library version 1.0.0:   ~/.arduino15/packages/CubeCell/hardware/CubeCell/1.0.0/libraries/LoRa/src/LoRaWan_APP.cpp
 
-- Platformio IDE: ~/.platformio/packages/framework-arduinoasrmicro650x/libraries/LoRa/src/LoRaWan_APP.cpp
+- Platformio IDE:  
+~/.platformio/packages/framework-arduinoasrmicro650x/libraries/LoRa/src/LoRaWan_APP.cpp
 
 In LoRaWan_APP.cpp look for #define LORAWAN_DEFAULT_DATARATE
 Depending on the version of the Heltec runtime that is installed this default may be set to DR_0, DR_3, DR_5 or some other value.
@@ -47,21 +49,26 @@ Update the LORAWAN_DEFAULT_DATARATE as appropriate for your application needs.
 The above values are valid for the US902-928MHz region(North America), the values may differ for other LoRa regions. This link will take you to document which may help determine the correct value for other LoRa regions.
 https://lora-alliance.org/resource-hub/rp2-101-lorawanr-regional-parameters
 
-## LoRaWAN preamble size
+#### LoRaWAN preamble size
 There are some versions of the Heltec runtime libraries that may set a LoRaWAN preamble size that is incompatible with the current LoRaWan specification. If the preamble size is not set correctly your device cannot join the network.
 
-This should be verified in the following file corresponding to your target LoRaWan region. For region US915 this file is:
+This should be verified in the following file corresponding to your target LoRaWan region. For region US915 this file is RegionUS915.c:
 
-- Arduino IDE library version 1.0.0:   ~/.arduino15/packages/CubeCell/hardware/CubeCell/1.0.0/cores/asr650x/loramac/mac/region/RegionUS915.c
+- For Arduino IDE library version 1.0.0 the file is located:    ~/.arduino15/packages/CubeCell/hardware/CubeCell/1.0.0/cores/asr650x/loramac/mac/region/RegionUS915.c
 
-- Platformio IDE: ~/.platformio/packages/framework-arduinoasrmicro650x/cores/asr650x/loramac/mac/region/RegionUS915.c
+- Platformio IDE:  
+~/.platformio/packages/framework-arduinoasrmicro650x/cores/asr650x/loramac/mac/region/RegionUS915.c
 
 In this file the line: ( your version could have 14 or 16 for the 7th parameter, it needs to be 8)
 
- change:
-   Radio.SetTxConfig( MODEM_LORA, phyTxPower, 0, bandwidth, phyDr, 1, 14, false, true, 0, 0, false, 3e3 );
- To:
-   Radio.SetTxConfig( MODEM_LORA, phyTxPower, 0, bandwidth, phyDr, 1, 8, false, true, 0, 0, false, 3e3 );
+Change:
+```
+Radio.SetTxConfig( MODsEM_LORA, phyTxPower, 0, bandwidth, phyDr, 1, 14, false, true, 0, 0, false, 3e3 );
+```
+To:
+```
+Radio.SetTxConfig( MODEM_LORA, phyTxPower, 0, bandwidth, phyDr, 1, 8, false, true, 0, 0, false, 3e3 );
+```
 
 Heltec support has been notified of these issues, hopefully a future release of those libs will resolve the issues.
 
