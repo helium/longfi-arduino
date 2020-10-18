@@ -23,16 +23,7 @@ uint32_t devAddr =  ( uint32_t )0x007e6ae1;
 /*LoraWan channelsmask, default channels 0-7*/ 
 uint16_t userChannelsMask[6]={ 0xFF00,0x0000,0x0000,0x0000,0x0000,0x0000 };
 
-// The next 6 variables are set based on the setting
-// within the Arduino IDE Tools menu directly under board
-// selection if a CubeCell board is selected.
-// comment out the following #define if you want to
-// hard code them within this sketch. If you do please
-// verify their validity below.
-
-#define ASSIGN_VIA_IDE
-
-#ifdef ASSIGN_VIA_IDE
+/* NOTE: It is very important that these variables be defined correctly in the Arduino IDE Tools->Board options */
 
 /*LoraWan region, select in arduino IDE tools*/
 LoRaMacRegion_t loraWanRegion = ACTIVE_REGION;
@@ -51,17 +42,6 @@ bool keepNet = LORAWAN_NET_RESERVE;
 
 /* Indicates if the node is sending confirmed or unconfirmed messages */
 bool isTxConfirmed = LORAWAN_UPLINKMODE;
-
-#else     // ASSIGN_VIA_IDE
-// hardcode defaults for US915, CLASS A, unconfirmed uplink, no ADR
-LoRaMacRegion_t loraWanRegion = LORAMAC_REGION_US915;
-DeviceClass_t  loraWanClass = CLASS_A;
-bool overTheAirActivation = true; // LORAWAN_NETMODE;
-bool loraWanAdr = false;          // ADR OFF
-bool keepNet = false;
-bool isTxConfirmed = false;       // Unconfirmed uplink
-
-#endif  // ASSIGN_VIA_IDE
 
 /*the application data transmission duty cycle.  value in [ms].*/
 uint32_t appTxDutyCycle = 15000;
