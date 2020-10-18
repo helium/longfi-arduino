@@ -23,14 +23,22 @@ uint32_t devAddr =  ( uint32_t )0x007e6ae1;
 /*LoraWan channelsmask, default channels 0-7*/ 
 uint16_t userChannelsMask[6]={ 0xFF00,0x0000,0x0000,0x0000,0x0000,0x0000 };
 
+// The next 6 variables are set based on the setting
+// within the Arduino IDE Tools menu directly under board
+// selection if a CubeCell board is selected.
+// comment out the following #define if you want to
+// hard code them within this sketch. If you do please
+// verify their validity below.
+
+#define ASSIGN_VIA_IDE
+
+#ifdef ASSIGN_VIA_IDE
+
 /*LoraWan region, select in arduino IDE tools*/
 LoRaMacRegion_t loraWanRegion = ACTIVE_REGION;
 
 /*LoraWan Class, Class A and Class C are supported*/
 DeviceClass_t  loraWanClass = LORAWAN_CLASS;
-
-/*the application data transmission duty cycle.  value in [ms].*/
-uint32_t appTxDutyCycle = 15000;
 
 /*OTAA or ABP*/
 bool overTheAirActivation = LORAWAN_NETMODE;
@@ -43,6 +51,20 @@ bool keepNet = LORAWAN_NET_RESERVE;
 
 /* Indicates if the node is sending confirmed or unconfirmed messages */
 bool isTxConfirmed = LORAWAN_UPLINKMODE;
+
+#else     // ASSIGN_VIA_IDE
+// hardcode defaults for US915, CLASS A, unconfirmed uplink, no ADR
+LoRaMacRegion_t loraWanRegion = LORAMAC_REGION_US915;
+DeviceClass_t  loraWanClass = CLASS_A;
+bool overTheAirActivation = true; // LORAWAN_NETMODE;
+bool loraWanAdr = false;          // ADR OFF
+bool keepNet = false;
+bool isTxConfirmed = false;       // Unconfirmed uplink
+
+#endif  // ASSIGN_VIA_IDE
+
+/*the application data transmission duty cycle.  value in [ms].*/
+uint32_t appTxDutyCycle = 15000;
 
 /* Application port */
 uint8_t appPort = 2;
@@ -67,6 +89,16 @@ uint8_t appPort = 2;
 * the datarate, in case the LoRaMAC layer did not receive an acknowledgment
 */
 uint8_t confirmedNbTrials = 4;
+
+// This variable, defined in the runtime, tracks the number of uplinks sent.
+// When this count reaches 65,535 the connection must be re-established.
+// If you do not the device will continue to send data to the network but
+// it will not make it to the Helium console.
+// The value is tested below and a reconnection is forced if the counter
+//  equals 65534.
+// refer to FCnt on this documentation page:
+// https://developer.helium.com/longfi/mac-commands-fopts-adr
+extern uint32_t UpLinkCounter;
 
 /* Prepares the payload of the frame */
 static void prepareTxFrame( uint8_t port )
@@ -108,6 +140,12 @@ void loop()
 			printDevParam();
 			LoRaWAN.init(loraWanClass,loraWanRegion);
 			deviceState = DEVICE_STATE_JOIN;
+
+			// This is a runtime API that is in the Heltec github
+			// but has not yet made it to the Arduino install
+			// version. (1.0.0) It's here for future reference
+			// LoRaWAN.setDataRateForNoADR(DR_3);
+
 			break;
 		}
 		case DEVICE_STATE_JOIN:
@@ -117,9 +155,24 @@ void loop()
 		}
 		case DEVICE_STATE_SEND:
 		{
+			// Comment out this warning if you "really" do want
+			// to enable ADR
+			if (loraWanAdr == true)
+			{
+				Serial.println(">>>> WARNING: ADR is enabled.\n\tThis may reduce the datarate/Spreading Factor after about 100 uplinks");
+			}
+ 
 			prepareTxFrame( appPort );
 			LoRaWAN.send();
 			deviceState = DEVICE_STATE_CYCLE;
+			// the following is experimental but does seem to
+			// re-initialize the connection correctly. See the note
+			// at extern UpLinkCounter above
+			if (UpLinkCounter == 65534)
+			{
+				// force a rejoin
+				deviceState = DEVICE_STATE_INIT;
+			}
 			break;
 		}
 		case DEVICE_STATE_CYCLE:
