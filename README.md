@@ -25,4 +25,5 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 ### Heltec WiFi LoRa 32 V2
 * [longfi-us915](Heltec-WiFi-LoRa-32-V2/longfi-us915)
 
-
+### RAKWireless WisBlock 
+* [longfi-us915](RAKWireless-WisBlock/longfi-us915/)
