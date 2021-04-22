@@ -55,6 +55,10 @@ bool loraWanAdr = false;
 /* Indicates if the node is sending confirmed or unconfirmed messages */
 bool isTxConfirmed = false;
 
+/*LoraWan channelsmask, default channels 0-7*/
+uint16_t userChannelsMask[6]={ 0xFF00,0x0000,0x0000,0x0000,0x0000,0x0000 };
+
+
 /* Application port */
 uint8_t appPort = 2;
 
