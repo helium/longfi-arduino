@@ -31,3 +31,7 @@ Arduino IDE:
 2. Select Port: Tools > Port > COM# or /dev/ttyACM#(B-L072Z-LRWAN1)
 3. Upload Sketch: Select > Upload
 4. (Optional) View Serial Debug Output: Tools > Serial Monitor > 9600 baud
+
+
+### Sample Decoder
+* In the console-decoders directory you will find a simple sample decoder that goes along with this sample code. It is intended to be used as a Helium Console "Function". This will allow one to view the decoded payload within the Helium Console device debug view.
