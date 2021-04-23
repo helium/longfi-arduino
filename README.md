@@ -22,8 +22,14 @@ Here you will find a collection of Arduino sketch examples of transmitting on th
 * [longfi-us915](Adafruit-Feather-M0-RFM95/longfi-us915)
 * [longfi-us915-cargo-gps](GPS)
 
-### Heltec WiFi LoRa 32 V2
-* [longfi-us915](Heltec-WiFi-LoRa-32-V2/longfi-us915)
+### Heltec Boards
+* [WiFi LoRa 32 V2 longfi-us915](Heltec-WiFi-LoRa-32-V2/longfi-us915)
+* [CubeCell AB/01/02 longfi-us915](Heltec-CubeCell-Board/longfi-us915)
+* [CubeCell AB02s](Heltec-CubeCell-Board/helium-mapper)
+
 
 ### RAKWireless WisBlock 
 * [longfi-us915](RAKWireless-WisBlock/longfi-us915/)
+
+### TTGO T-Beam
+* [longfi-us915](/TTGO-TBeam-Tracker)
