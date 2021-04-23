@@ -36,3 +36,6 @@ uint8_t AppKey[] = { FILL_ME_IN };
 Serial Monitor Window
 1. Select 115200 baud from bottom right dropdown.
 2. Wait for device to successfully join, may take 1-3 min, and show several failures. Do not be alarmed by the failures, it is expected.
+
+## Sample Decoder
+* In the console-decoders directory you will find a simple sample decoder that goes along with this sample code. It is intended to be used as a Helium Console "Function". This will allow one to view the decoded payload within the Helium Console device debug view.
