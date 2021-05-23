@@ -9,7 +9,7 @@ Recent API changes to the runtime support library, SX126x-Arduino, have resulted
 | :warning: WARNING: This will require changes to the Arduino IDE installation, in particular the installed board support package files. The complete details of the changes required can be found [here](https://github.com/beegee-tokyo/SX126x-Arduino/blob/master/README_V2.md).|
 |:---------------------------|
 
-In addition to the IDE support file changes there are two major changes at the device application level if you are moving from verion 1 to version 2 of the support library:
+In addition to the IDE support file changes there are two major changes at the device application level if you are moving from version 1 to version 2 of the support library:
 * The lmh_init() API requires 2 more parameters
 * the device application is no longer required to call Radio.IrqProcess() within it's main processing loop. The processing will now be handled by the runtime layer.
 
