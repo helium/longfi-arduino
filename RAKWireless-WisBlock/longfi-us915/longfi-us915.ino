@@ -68,7 +68,10 @@ uint8_t nodeDeviceEUI[8] = {0x00, 0x00, 0xDA, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint8_t nodeAppEUI[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint8_t nodeAppKey[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-
+// Define the LoRaWan Region of choice
+// refer to the runtime support library file LoRaMac.h, region enumeration "eLoRaMacRegion_t"
+// for a list of supported regions
+#define LORA_REGION LORAMAC_REGION_US915
 
 // Private defination
 #define LORAWAN_APP_DATA_BUFF_SIZE 64                     /**< buffer size of the data to be transmitted. */
@@ -98,30 +101,9 @@ void setup()
   Serial.println("=====================================");
   Serial.println("Welcome to RAK4630 LoRaWan!!!");
   Serial.println("Type: OTAA");
-
-#if defined(REGION_AS923)
-  Serial.println("Region: AS923");
-#elif defined(REGION_AU915)
-  Serial.println("Region: AU915");
-#elif defined(REGION_CN470)
-  Serial.println("Region: CN470");
-#elif defined(REGION_CN779)
-  Serial.println("Region: CN779");
-#elif defined(REGION_EU433)
-  Serial.println("Region: EU433");
-#elif defined(REGION_IN865)
-  Serial.println("Region: IN865");
-#elif defined(REGION_EU868)
-  Serial.println("Region: EU868");
-#elif defined(REGION_KR920)
-  Serial.println("Region: KR920");
-#elif defined(REGION_US915)
+  // NOTE: Update per your region setting
   Serial.println("Region: US915");
-#elif defined(REGION_US915_HYBRID)
-  Serial.println("Region: US915_HYBRID");
-#else
-  Serial.println("Please define a region in the compiler options.");
-#endif
+  
   Serial.println("=====================================");
 
   //creat a user timer to send data to server period
@@ -137,8 +119,9 @@ void setup()
   lmh_setAppEui(nodeAppEUI);
   lmh_setAppKey(nodeAppKey);
 
+
   // Initialize LoRaWan
-  err_code = lmh_init(&lora_callbacks, lora_param_init, doOTAA);
+  err_code = lmh_init(&lora_callbacks, lora_param_init, doOTAA,  CLASS_A, LORA_REGION);
   if (err_code != 0)
   {
     Serial.printf("lmh_init failed - %d\n", err_code);
@@ -152,8 +135,7 @@ void setup()
 
 void loop()
 {
-  // Handle Radio events
-  Radio.IrqProcess();
+  // user code
 }
 
 /**@brief LoRa function for handling HasJoined event.
