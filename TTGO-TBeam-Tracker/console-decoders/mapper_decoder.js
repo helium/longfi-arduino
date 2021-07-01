@@ -1,4 +1,3 @@
-// Decoder for TTGO_TBeam mapping
 function Decoder(bytes, port) {
     var decoded = {};
 
@@ -15,6 +14,9 @@ function Decoder(bytes, port) {
 
     decoded.hdop = bytes[8] / 10.0;
     decoded.sats = bytes[9];
+    
+    //additional required field
+    decoded.accuracy = 3;
 
     return decoded;
 }
