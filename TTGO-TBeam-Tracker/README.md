@@ -46,7 +46,7 @@ In summary, within the Arduino IDE open Boards Manager from Tools > Board menu a
 
 The specific details for adding a Mapper or Cargo integration use a different edge node device than the one detailed here. When prompted to add a function decoder, be sure to use the following decoder. Note: This decoder can also be found within this project in the console-decoders directory.
 
-```C
+```JS
 function Decoder(bytes, port) {
     var decoded = {};
 
@@ -63,6 +63,9 @@ function Decoder(bytes, port) {
 
     decoded.hdop = bytes[8] / 10.0;
     decoded.sats = bytes[9];
+    
+    //additional required field
+    decoded.accuracy = 3;
 
     return decoded;
 }
